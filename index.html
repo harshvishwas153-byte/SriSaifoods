@@ -1191,6 +1191,295 @@
     .calc-container { grid-template-columns: 1fr; gap: 30px; padding: 25px; }
   }
 
+  /* ---------------- REWARDS DASHBOARD ---------------- */
+  .rewards-section {
+    background: linear-gradient(180deg, #fff8e6 0%, #f5fff1 48%, var(--cream) 100%);
+  }
+  .reward-window {
+    max-width: 1120px;
+    margin: 0 auto;
+    background: #fffdf8;
+    border: 1px solid rgba(43, 26, 15, 0.14);
+    border-radius: 8px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .reward-window-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    padding: 22px 26px;
+    background: var(--cocoa);
+    color: var(--cream);
+  }
+  .reward-window-bar h3 {
+    font-size: 1.45rem;
+    color: var(--marigold);
+    line-height: 1.1;
+  }
+  .reward-window-bar p {
+    margin-top: 4px;
+    font-size: 0.92rem;
+    color: #e8dac9;
+  }
+  .reward-status-pill {
+    white-space: nowrap;
+    background: rgba(242, 167, 27, 0.14);
+    border: 1px solid rgba(242, 167, 27, 0.45);
+    border-radius: 999px;
+    padding: 8px 14px;
+    color: var(--marigold);
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+  }
+  .reward-menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid rgba(43, 26, 15, 0.1);
+    background: #fff6e4;
+  }
+  .reward-menu-btn {
+    border: 0;
+    background: transparent;
+    color: var(--cocoa);
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+    padding: 15px 18px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+  }
+  .reward-menu-btn.active,
+  .reward-menu-btn:hover {
+    background: var(--maroon);
+    color: var(--cream);
+  }
+  .reward-panel {
+    display: none;
+    padding: 28px;
+  }
+  .reward-panel.active {
+    display: block;
+  }
+  .reward-grid,
+  .collector-grid {
+    display: grid;
+    grid-template-columns: 0.92fr 1.08fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .reward-tool-panel {
+    border: 1px solid rgba(43, 26, 15, 0.12);
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 22px;
+    min-height: 100%;
+  }
+  .reward-tool-panel h4 {
+    font-size: 1.2rem;
+    color: var(--maroon);
+    margin-bottom: 14px;
+  }
+  .reward-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+  .reward-field label {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--cocoa);
+  }
+  .reward-field input,
+  .reward-field select {
+    width: 100%;
+    border: 2px solid rgba(43, 26, 15, 0.14);
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'Hind', sans-serif;
+    font-size: 1rem;
+    color: var(--cocoa);
+    background: #fffdf8;
+    outline: none;
+  }
+  .reward-field input:focus,
+  .reward-field select:focus {
+    border-color: var(--maroon);
+  }
+  .reward-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .reward-btn {
+    border: 0;
+    border-radius: 8px;
+    background: var(--maroon);
+    color: var(--cream);
+    cursor: pointer;
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 0.98rem;
+    font-weight: 800;
+    padding: 11px 16px;
+    transition: var(--transition-smooth);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .reward-btn.secondary {
+    background: var(--cocoa);
+  }
+  .reward-btn.light {
+    background: #fff;
+    color: var(--cocoa);
+    border: 2px solid rgba(43, 26, 15, 0.14);
+  }
+  .reward-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .reward-btn:hover:not(:disabled) {
+    background: var(--marigold);
+    color: var(--cocoa);
+    transform: translateY(-2px);
+  }
+  .reward-btn svg {
+    width: 17px;
+    height: 17px;
+    fill: currentColor;
+  }
+  .reward-message {
+    min-height: 22px;
+    color: #5e4328;
+    font-size: 0.94rem;
+    line-height: 1.45;
+  }
+  .reward-message.strong {
+    color: var(--maroon);
+    font-weight: 700;
+  }
+  .reward-hidden {
+    display: none !important;
+  }
+  .reward-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .reward-summary-item {
+    background: #fff8eb;
+    border: 1px solid rgba(43, 26, 15, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .reward-summary-item span {
+    display: block;
+    color: #6a4b2f;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .reward-summary-item b {
+    display: block;
+    font-family: 'Baloo 2', sans-serif;
+    color: var(--maroon);
+    font-size: 1.35rem;
+    margin-top: 3px;
+  }
+  .generated-qr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    max-height: 460px;
+    overflow: auto;
+    padding-right: 4px;
+  }
+  .reward-qr-card {
+    border: 1px solid rgba(43, 26, 15, 0.12);
+    border-radius: 8px;
+    background: #fff;
+    padding: 12px;
+    text-align: center;
+  }
+  .reward-qr-box {
+    width: 128px;
+    height: 128px;
+    margin: 0 auto 10px;
+    display: grid;
+    place-items: center;
+    background: #fff;
+    border: 1px solid rgba(43, 26, 15, 0.1);
+  }
+  .reward-qr-box img,
+  .reward-qr-box canvas {
+    width: 112px !important;
+    height: 112px !important;
+  }
+  .reward-qr-card b {
+    display: block;
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.2rem;
+    color: var(--maroon);
+  }
+  .reward-qr-card span {
+    display: block;
+    color: #6a4b2f;
+    font-size: 0.78rem;
+    word-break: break-word;
+  }
+  .qr-reader {
+    min-height: 270px;
+    border: 2px dashed rgba(43, 26, 15, 0.18);
+    border-radius: 8px;
+    background: #fff8eb;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: #7b6045;
+    text-align: center;
+  }
+  .claim-state {
+    background: #fff8eb;
+    border: 1px solid rgba(43, 26, 15, 0.12);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    color: #5e4328;
+    min-height: 92px;
+  }
+  .claim-state b {
+    color: var(--maroon);
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.25rem;
+  }
+  .provider-note {
+    margin-top: 14px;
+    font-size: 0.88rem;
+    color: #705336;
+    line-height: 1.45;
+  }
+  @media (max-width: 900px) {
+    .reward-window-bar {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .reward-grid,
+    .collector-grid {
+      grid-template-columns: 1fr;
+    }
+    .reward-summary-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   /* ---------------- FAQS ---------------- */
   .faq { background: var(--cream); }
   .faq-container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
@@ -1361,6 +1650,7 @@
       <li><a href="#about">Our Plant</a></li>
       <li><a href="#fryer">Snack Fryer</a></li>
       <li><a href="#products">Products Range</a></li>
+      <li><a href="#rewards">Rewards</a></li>
       <li><a href="#calculator" class="btn-nav-b2b">Wholesale Portal</a></li>
     </ul>
   </nav>
@@ -1388,7 +1678,7 @@
       
       <!-- Slide 1: Welcome & Flavor -->
       <div class="hero-slide">
-      <img src="Slide-1.jpeg" alt="">
+      <img src="assets/images/hero/factory-fryer.jpeg" alt="">
         <div class="hero-copy">
           <span class="hero-kicker">Sri Sai's & Madan Ji's Brand</span>
           <h2>A Crunch of Masti in Every Single Bite!</h2>
@@ -1402,7 +1692,7 @@
 
       <!-- Slide 2: Factory & Hygiene -->
       <div class="hero-slide">
-      <img src="Slide 2.jpeg" alt="">
+      <img src="assets/images/hero/seasoning-drum.jpeg" alt="">
         <div class="hero-copy">
           <span class="hero-kicker">100% Automated Manufacturing</span>
           <h2>Hygiene & Quality at Global Standards</h2>
@@ -1416,7 +1706,7 @@
 
       <!-- Slide 3: Packaging & B2B -->
       <div class="hero-slide">
-      <img src="Banner.png" alt="Bulk Capacity">
+      <img src="assets/images/hero/product-range.png" alt="Bulk Capacity">
         <div class="hero-copy">
           <span class="hero-kicker">Distributors & Retail Chain Supply</span>
           <h2>Bulk Capacity & Brand Supply</h2>
@@ -1485,7 +1775,7 @@
   </div>
 
   <div class="about-visual">
-  <img src="Processor.png" alt="Processor">
+  <img src="assets/images/factory/processor.png" alt="Processor">
     <div class="about-visual-overlay">
       <h3>An ISO Certified & FSSAI Registered</h3>
       <p>Hygienic manufacturing plant, metal detectors, and clean sorting environment.</p>
@@ -1597,7 +1887,7 @@
     <div class="product-card" data-category="sri_sais">
       <span class="product-badge">Masti Masala</span>
       <div class="product-media">
-    <img src="Aaloo laccha banner.png" alt="Aaloo lacha 5">
+    <img src="assets/images/products/aloo-laccha-rs5.png" alt="Aaloo lacha 5">
       </div>
       <div class="product-info">
         <span class="brand-tag">Sri Sai's Brand — Rs. 5</span>
@@ -1614,7 +1904,7 @@
     <div class="product-card" data-category="sri_sais">
       <span class="product-badge">20% Extra</span>
       <div class="product-media">
-    <img src="Aloo_lacha.png" alt="Aaloo lacha 2">
+    <img src="assets/images/products/aloo-laccha-rs2.png" alt="Aaloo lacha 2">
       </div>
       <div class="product-info">
         <span class="brand-tag">Sri Sai's Brand — Rs. 2</span>
@@ -1631,7 +1921,7 @@
     <div class="product-card" data-category="sri_sais">
       <span class="product-badge">Taste that Lasts</span>
       <div class="product-media">
-    <img src="Time_Pass.png" alt="Time Pass">
+    <img src="assets/images/products/time-pass.png" alt="Time Pass">
       </div>
       <div class="product-info">
         <span class="brand-tag">Sri Sai's Brand — Rs. 5</span>
@@ -1648,7 +1938,7 @@
     <div class="product-card" data-category="sri_sais">
       <span class="product-badge">Proteins & Calcium</span>
       <div class="product-media">
-    <img src="Magi.png" alt="Magi">
+    <img src="assets/images/products/tasty-magi.png" alt="Magi">
       </div>
       <div class="product-info">
         <span class="brand-tag">Sri Sai's Brand — Rs. 1</span>
@@ -1665,7 +1955,7 @@
     <div class="product-card" data-category="madan_ji">
       <span class="product-badge">Free Gift Inside</span>
       <div class="product-media">
-    <img src="Kaali_churail.png" alt="Kaali Churail">
+    <img src="assets/images/products/kali-chudail.png" alt="Kaali Churail">
       </div>
       <div class="product-info">
         <span class="brand-tag">Madan Ji Brand — Rs. 2</span>
@@ -1682,7 +1972,7 @@
     <div class="product-card" data-category="madan_ji">
       <span class="product-badge">Corn Namkeen</span>
       <div class="product-media">
-    <img src="Kala_Bhoot.png" alt="Kala Bhoot">
+    <img src="assets/images/products/kala-bhoot.png" alt="Kala Bhoot">
       </div>
       <div class="product-info">
         <span class="brand-tag">Madan Ji Brand — Rs. 2</span>
@@ -1699,7 +1989,7 @@
     <div class="product-card" data-category="peturam">
       <span class="product-badge">Hot Seller</span>
       <div class="product-media">
-    <img src="Nimki.png" alt="Nimki">
+    <img src="assets/images/products/peturam-nimki.png" alt="Nimki">
       </div>
       <div class="product-info">
         <span class="brand-tag">Peturam Brand — Rs. 2 / Rs. 5</span>
@@ -1729,7 +2019,7 @@
     <div class="upcoming-card">
       <span class="upcoming-ribbon">Coming Soon</span>
       <div class="upcoming-icon">
-        <img src="Katori.png" alt="Katori Cups">
+        <img src="assets/images/upcoming/katori.png" alt="Katori Cups">
       </div>
       <h3>Katori Cups</h3>
       <p>Bowl-shaped bite-sized cups, perfect for a crunchy tangy filling. Currently under taste-trial in our R&D kitchen.</p>
@@ -1739,7 +2029,7 @@
     <div class="upcoming-card">
       <span class="upcoming-ribbon">Coming Soon</span>
       <div class="upcoming-icon">
-        <img src="Bundia.png" alt="Bundiya Pearls">
+        <img src="assets/images/upcoming/bundia.png" alt="Bundiya Pearls">
       </div>
       <h3>Bundiya Pearls</h3>
       <p>Tiny golden crunchy pearls made using our fine-grain grits. Being tested at higher expansion ratios for maximum puff.</p>
@@ -1749,7 +2039,7 @@
     <div class="upcoming-card">
       <span class="upcoming-ribbon">Coming Soon</span>
       <div class="upcoming-icon">
-        <img src="Bhindi.png" alt="Bhindi Fingers">
+        <img src="assets/images/upcoming/bhindi.png" alt="Bhindi Fingers">
       </div>
       <h3>Bhindi Fingers</h3>
       <p>Okra-shaped ridged fingers with a distinct crunch profile. In final formulation stage before mass production begins.</p>
@@ -1766,7 +2056,7 @@
     <button class="modal-close" onclick="closeSpecs()">×</button>
     <div class="modal-head">
       <div class="modal-thumb">
-        <img id="modalImg" src="" alt="Thumbnail">
+        <img id="modalImg" src="assets/images/products/aloo-laccha-rs5.png" alt="Thumbnail">
       </div>
       <div class="modal-head-info">
         <span id="modalCategory">Sri Sai's Product</span>
@@ -1846,6 +2136,146 @@
       </div>
       <h3>Massive Capacity</h3>
       <p>We process tons daily, ensuring immediate supply to keep your shelves fully stocked.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REWARDS DASHBOARD ============ -->
+<section class="section rewards-section" id="rewards">
+  <div class="section-head">
+    <span class="eyebrow">Gift Rewards</span>
+    <h2>QR Reward Dashboard</h2>
+    <p>Create short-validity QR rewards for snack packets and let customers claim the scanned amount to their UPI ID.</p>
+  </div>
+
+  <div class="reward-window">
+    <div class="reward-window-bar">
+      <div>
+        <h3>Sri Sai's Rewards</h3>
+        <p>Admin QR generation and customer collection in one dashboard window.</p>
+      </div>
+      <div class="reward-status-pill" id="rewardTotalPill">0 active QR</div>
+    </div>
+
+    <div class="reward-menu" role="tablist" aria-label="Rewards menu">
+      <button class="reward-menu-btn active" type="button" data-reward-view="admin" role="tab" aria-selected="true">Admin</button>
+      <button class="reward-menu-btn" type="button" data-reward-view="collect" role="tab" aria-selected="false">Collect Reward</button>
+    </div>
+
+    <div class="reward-panel active" data-reward-panel="admin" id="rewardAdminPanel">
+      <div class="reward-grid">
+        <div class="reward-tool-panel" id="adminLoginPanel">
+          <h4>Admin Login</h4>
+          <form id="adminEmailForm">
+            <div class="reward-field">
+              <label for="adminEmail">Gmail ID</label>
+              <input id="adminEmail" type="email" placeholder="admin@gmail.com" autocomplete="email" required>
+            </div>
+            <div class="reward-actions">
+              <button class="reward-btn" type="submit">
+                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                Send OTP
+              </button>
+            </div>
+          </form>
+
+          <form id="adminOtpForm" class="reward-hidden">
+            <div class="reward-field">
+              <label for="adminOtp">OTP</label>
+              <input id="adminOtp" type="text" inputmode="numeric" maxlength="6" placeholder="6 digit OTP" required>
+            </div>
+            <div class="reward-actions">
+              <button class="reward-btn secondary" type="submit">
+                <svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                Verify Admin
+              </button>
+            </div>
+          </form>
+          <p class="reward-message" id="adminLoginMessage"></p>
+          <p class="provider-note">Live Gmail OTP sending needs a backend email service. This page keeps a demo OTP in the browser so the dashboard can be tested now.</p>
+        </div>
+
+        <div class="reward-tool-panel reward-hidden" id="adminGeneratorPanel">
+          <h4>Generate Reward QR</h4>
+          <form id="qrGeneratorForm">
+            <div class="reward-summary-grid">
+              <div class="reward-summary-item">
+                <span>Total Issued</span>
+                <b id="rewardIssuedCount">0</b>
+              </div>
+              <div class="reward-summary-item">
+                <span>Active Value</span>
+                <b id="rewardActiveValue">Rs. 0</b>
+              </div>
+              <div class="reward-summary-item">
+                <span>Expiry</span>
+                <b>3 Months</b>
+              </div>
+            </div>
+
+            <div class="reward-field">
+              <label for="rewardAmount">Rs. Amount in each QR</label>
+              <input id="rewardAmount" type="number" min="1" max="5000" step="1" value="10" required>
+            </div>
+            <div class="reward-field">
+              <label for="rewardCount">Number of QR codes</label>
+              <input id="rewardCount" type="number" min="1" max="100" step="1" value="10" required>
+            </div>
+            <div class="reward-actions">
+              <button class="reward-btn" type="submit">
+                <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm10-2h2v2h-2v-2zm4 0h2v4h-4v-2h2v-2zm-6 4h2v4h-2v-4zm4 2h4v2h-4v-2z"/></svg>
+                Generate QR
+              </button>
+              <button class="reward-btn light" id="downloadRewardPdf" type="button" disabled>
+                <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
+                Download PDF
+              </button>
+            </div>
+          </form>
+          <p class="reward-message strong" id="qrGenerateMessage"></p>
+          <div class="generated-qr-grid" id="generatedQrGrid" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reward-panel" data-reward-panel="collect" id="rewardCollectPanel">
+      <div class="collector-grid">
+        <div class="reward-tool-panel">
+          <h4>Scan Reward QR</h4>
+          <div class="qr-reader" id="qrReader">Camera scanner opens here</div>
+          <div class="reward-actions">
+            <button class="reward-btn" id="startScannerBtn" type="button">
+              <svg viewBox="0 0 24 24"><path d="M4 4h4V2H2v6h2V4zm12-2v2h4v4h2V2h-6zM4 16H2v6h6v-2H4v-4zm16 4h-4v2h6v-6h-2v4zM7 7h10v10H7V7zm2 2v6h6V9H9z"/></svg>
+              Open Scanner
+            </button>
+            <button class="reward-btn light" id="stopScannerBtn" type="button" disabled>Stop</button>
+          </div>
+          <form id="manualCodeForm" style="margin-top:16px;">
+            <div class="reward-field">
+              <label for="manualRewardCode">Reward code</label>
+              <input id="manualRewardCode" type="text" placeholder="Paste scanned QR code">
+            </div>
+            <button class="reward-btn secondary" type="submit">Verify Code</button>
+          </form>
+        </div>
+
+        <div class="reward-tool-panel">
+          <h4>Collect Reward</h4>
+          <div class="claim-state" id="claimState">Scan a valid reward QR to see the amount and claim status.</div>
+          <form id="claimRewardForm" class="reward-hidden">
+            <div class="reward-field">
+              <label for="userUpiId">Your UPI ID</label>
+              <input id="userUpiId" type="text" placeholder="name@upi" autocomplete="off" required>
+            </div>
+            <button class="reward-btn" type="submit">
+              <svg viewBox="0 0 24 24"><path d="M2 21 23 12 2 3v7l15 2-15 2v7z"/></svg>
+              Send Reward
+            </button>
+          </form>
+          <p class="reward-message strong" id="claimMessage"></p>
+          <p class="provider-note">Cashfree/Freecash payout calls must run from a secure server so API keys and QR tokens stay protected.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1985,6 +2415,7 @@
       <a href="#about">Our Plant</a>
       <a href="#fryer">Snack Fryer</a>
       <a href="#products">Products Range</a>
+      <a href="#rewards">Rewards</a>
       <a href="#calculator">Wholesale Portal</a>
     </div>
 
@@ -2002,6 +2433,9 @@
   </div>
 </footer>
 
+<script src="assets/js/vendor/qrcode.min.js"></script>
+<script src="assets/js/vendor/jspdf.umd.min.js"></script>
+<script src="assets/js/vendor/html5-qrcode.min.js"></script>
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
@@ -2343,8 +2777,7 @@
     aloo_laccha_5: {
       title: "Aloo Laccha (Masti Masala) Rs. 5",
       category: "Sri Sai's Brand",
-      img: "Aaloo laccha banner.png",
-      imgFallback: "file:///C:/Users/harsh/.gemini/antigravity/brain/c4ac75db-1532-40ab-8e0b-3d9e44d6fb97/media__1783699673473.jpg",
+      img: "assets/images/products/aloo-laccha-rs5.png",
       expansion: "Ready to Eat (Crispy)",
       oil: "Low (20% - 22%)",
       shelf: "6 Months (Foil Sealed)",
@@ -2355,8 +2788,7 @@
     aloo_laccha_2: {
       title: "Aloo Laccha Namkeen Rs. 2",
       category: "Sri Sai's Brand",
-      img: "Aloo_lacha.png",
-      imgFallback: "file:///C:/Users/harsh/.gemini/antigravity/brain/c4ac75db-1532-40ab-8e0b-3d9e44d6fb97/media__1783699673656.jpg",
+      img: "assets/images/products/aloo-laccha-rs2.png",
       expansion: "Ready to Eat (Crispy)",
       oil: "Low (20% - 22%)",
       shelf: "6 Months (Foil Sealed)",
@@ -2367,8 +2799,7 @@
     time_pass: {
       title: "Time Pass Triangles Rs. 5",
       category: "Sri Sai's Brand",
-      img: "Time_Pass.png",
-      imgFallback: "file:///C:/Users/harsh/.gemini/antigravity/brain/c4ac75db-1532-40ab-8e0b-3d9e44d6fb97/media__1783699752490.jpg",
+      img: "assets/images/products/time-pass.png",
       expansion: "3.2x ratio",
       oil: "Low Retention (21% - 23%)",
       shelf: "12 Months (Dry Pellets)",
@@ -2379,8 +2810,7 @@
     tasty_magi: {
       title: "Tasty Magi Masala Rs. 1",
       category: "Sri Sai's Brand",
-      img: "Magi.png",
-      imgFallback: "file:///C:/Users/harsh/.gemini/antigravity/brain/c4ac75db-1532-40ab-8e0b-3d9e44d6fb97/media__1783699715649.jpg",
+      img: "assets/images/products/tasty-magi.png",
       expansion: "Ready to Eat Noodle snack",
       oil: "Low (19% - 21%)",
       shelf: "6 Months (Foil Sealed)",
@@ -2391,8 +2821,7 @@
     kali_chudail: {
       title: "Kali Chudail Ka Khazana Rs. 2",
       category: "Madan Ji Brand",
-      img: "Kaali_churail.png",
-      imgFallback: "file:///C:/Users/harsh/.gemini/antigravity/brain/c4ac75db-1532-40ab-8e0b-3d9e44d6fb97/media__1783699694915.jpg",
+      img: "assets/images/products/kali-chudail.png",
       expansion: "Ready to Eat (Toy Inside)",
       oil: "Low Absorption (22% - 24%)",
       shelf: "6 Months (Foil Sealed)",
@@ -2403,8 +2832,7 @@
     kala_bhoot: {
       title: "Kala Bhoot Corn Tubes Rs. 2",
       category: "Madan Ji Brand",
-      img: "Kala_Bhoot.png",
-      imgFallback: "file:///C:/Users/harsh/.gemini/antigravity/brain/c4ac75db-1532-40ab-8e0b-3d9e44d6fb97/media__1783699695005.jpg",
+      img: "assets/images/products/kala-bhoot.png",
       expansion: "Ready to Eat (Hollow tubes)",
       oil: "Low (21% - 23%)",
       shelf: "6 Months (Foil Sealed)",
@@ -2415,8 +2843,7 @@
     peturam_nimki: {
       title: "Nimki Crunchy Rs. 2 / Rs. 5",
       category: "Peturam Brand",
-      img: "Nimki.png",
-      imgFallback: "file:///C:/Users/harsh/.gemini/antigravity/brain/c4ac75db-1532-40ab-8e0b-3d9e44d6fb97/media__1783699752507.jpg",
+      img: "assets/images/products/peturam-nimki.png",
       expansion: "Traditional Square Nimki",
       oil: "Sober oil (18% - 21%)",
       shelf: "6 Months (Foil Sealed)",
@@ -2430,8 +2857,8 @@
     const data = specsDatabase[productKey];
     if(!data) return;
 
+    modalImg.onerror = null;
     modalImg.src = data.img;
-    modalImg.onerror = () => { modalImg.src = data.imgFallback; };
     modalTitle.textContent = data.title;
     modalCategory.textContent = data.category;
     specExpansion.textContent = data.expansion;
@@ -2448,6 +2875,469 @@
     specModal.classList.remove('active');
   }
 
+  // ---------------- REWARD QR DASHBOARD ----------------
+  const REWARD_STORAGE_KEY = 'sriSaisRewards.v1';
+  const rewardMenuBtns = document.querySelectorAll('.reward-menu-btn');
+  const rewardPanels = document.querySelectorAll('[data-reward-panel]');
+  const rewardTotalPill = document.getElementById('rewardTotalPill');
+  const adminEmailForm = document.getElementById('adminEmailForm');
+  const adminOtpForm = document.getElementById('adminOtpForm');
+  const adminEmail = document.getElementById('adminEmail');
+  const adminOtp = document.getElementById('adminOtp');
+  const adminLoginMessage = document.getElementById('adminLoginMessage');
+  const adminLoginPanel = document.getElementById('adminLoginPanel');
+  const adminGeneratorPanel = document.getElementById('adminGeneratorPanel');
+  const qrGeneratorForm = document.getElementById('qrGeneratorForm');
+  const rewardAmount = document.getElementById('rewardAmount');
+  const rewardCount = document.getElementById('rewardCount');
+  const generatedQrGrid = document.getElementById('generatedQrGrid');
+  const downloadRewardPdf = document.getElementById('downloadRewardPdf');
+  const qrGenerateMessage = document.getElementById('qrGenerateMessage');
+  const rewardIssuedCount = document.getElementById('rewardIssuedCount');
+  const rewardActiveValue = document.getElementById('rewardActiveValue');
+  const qrReader = document.getElementById('qrReader');
+  const startScannerBtn = document.getElementById('startScannerBtn');
+  const stopScannerBtn = document.getElementById('stopScannerBtn');
+  const manualCodeForm = document.getElementById('manualCodeForm');
+  const manualRewardCode = document.getElementById('manualRewardCode');
+  const claimState = document.getElementById('claimState');
+  const claimRewardForm = document.getElementById('claimRewardForm');
+  const userUpiId = document.getElementById('userUpiId');
+  const claimMessage = document.getElementById('claimMessage');
+
+  let rewardLedger = loadRewardLedger();
+  let latestRewardBatch = [];
+  let activeRewardClaim = null;
+  let demoOtpCode = null;
+  let demoOtpExpiresAt = 0;
+  let html5QrScanner = null;
+
+  function loadRewardLedger() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(REWARD_STORAGE_KEY) || '[]');
+      return Array.isArray(saved) ? saved : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveRewardLedger() {
+    localStorage.setItem(REWARD_STORAGE_KEY, JSON.stringify(rewardLedger));
+  }
+
+  function addMonths(date, months) {
+    const copy = new Date(date.getTime());
+    const day = copy.getDate();
+    copy.setMonth(copy.getMonth() + months);
+    if (copy.getDate() !== day) {
+      copy.setDate(0);
+    }
+    return copy;
+  }
+
+  function formatRewardDate(value) {
+    return new Intl.DateTimeFormat('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }).format(new Date(value));
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char]));
+  }
+
+  function randomToken(length) {
+    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    if (window.crypto && window.crypto.getRandomValues) {
+      const bytes = new Uint8Array(length);
+      window.crypto.getRandomValues(bytes);
+      return Array.from(bytes, byte => alphabet[byte % alphabet.length]).join('');
+    }
+    return Array.from({ length }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+  }
+
+  function createRewardCode() {
+    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    return `SSR-${datePart}-${randomToken(8)}`;
+  }
+
+  function rewardPayload(reward) {
+    return JSON.stringify({
+      type: 'SS_REWARD',
+      code: reward.code,
+      amount: reward.amount,
+      expiresAt: reward.expiresAt
+    });
+  }
+
+  function extractRewardCode(rawValue) {
+    const value = String(rawValue || '').trim();
+    if (!value) return null;
+
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed && parsed.type === 'SS_REWARD' && parsed.code) {
+        return String(parsed.code).trim();
+      }
+    } catch (error) {
+      // Plain code fallback below.
+    }
+
+    if (value.startsWith('SS_REWARD|')) {
+      return value.split('|')[1] || null;
+    }
+
+    const urlToken = value.match(/[?&](?:code|reward|token)=([^&]+)/i);
+    if (urlToken) {
+      return decodeURIComponent(urlToken[1]);
+    }
+
+    return value;
+  }
+
+  function getRewardStats() {
+    const now = Date.now();
+    const active = rewardLedger.filter(reward => {
+      return !reward.claimedAt && new Date(reward.expiresAt).getTime() > now;
+    });
+    const activeValue = active.reduce((sum, reward) => sum + Number(reward.amount || 0), 0);
+    return { activeCount: active.length, activeValue, issuedCount: rewardLedger.length };
+  }
+
+  function updateRewardStats() {
+    const stats = getRewardStats();
+    if (rewardTotalPill) {
+      rewardTotalPill.textContent = `${stats.activeCount} active QR`;
+    }
+    if (rewardIssuedCount) {
+      rewardIssuedCount.textContent = String(stats.issuedCount);
+    }
+    if (rewardActiveValue) {
+      rewardActiveValue.textContent = `Rs. ${stats.activeValue.toLocaleString('en-IN')}`;
+    }
+  }
+
+  function switchRewardPanel(view) {
+    rewardMenuBtns.forEach(btn => {
+      const isActive = btn.getAttribute('data-reward-view') === view;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', String(isActive));
+    });
+    rewardPanels.forEach(panel => {
+      panel.classList.toggle('active', panel.getAttribute('data-reward-panel') === view);
+    });
+  }
+
+  rewardMenuBtns.forEach(btn => {
+    btn.addEventListener('click', () => switchRewardPanel(btn.getAttribute('data-reward-view')));
+  });
+
+  adminEmailForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const email = adminEmail.value.trim().toLowerCase();
+    const isGmail = /^[a-z0-9._%+-]+@gmail\.com$/i.test(email);
+
+    if (!isGmail) {
+      adminLoginMessage.textContent = 'Please enter a valid Gmail ID for admin login.';
+      adminLoginMessage.classList.add('strong');
+      return;
+    }
+
+    demoOtpCode = String(Math.floor(100000 + Math.random() * 900000));
+    demoOtpExpiresAt = Date.now() + 5 * 60 * 1000;
+    adminOtp.value = '';
+    adminOtpForm.classList.remove('reward-hidden');
+    adminLoginMessage.classList.remove('strong');
+    adminLoginMessage.textContent = `OTP sent to ${email}. Demo OTP: ${demoOtpCode}`;
+    adminOtp.focus();
+  });
+
+  adminOtpForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const enteredOtp = adminOtp.value.trim();
+
+    if (!demoOtpCode || Date.now() > demoOtpExpiresAt) {
+      adminLoginMessage.textContent = 'OTP expired. Send a new OTP to continue.';
+      adminLoginMessage.classList.add('strong');
+      return;
+    }
+
+    if (enteredOtp !== demoOtpCode) {
+      adminLoginMessage.textContent = 'Incorrect OTP. Please try again.';
+      adminLoginMessage.classList.add('strong');
+      return;
+    }
+
+    adminLoginPanel.classList.add('reward-hidden');
+    adminGeneratorPanel.classList.remove('reward-hidden');
+    qrGenerateMessage.textContent = 'Admin verified. Generate reward QR codes below.';
+    updateRewardStats();
+  });
+
+  function renderRewardBatch(batch) {
+    generatedQrGrid.innerHTML = '';
+
+    batch.forEach(reward => {
+      const card = document.createElement('div');
+      card.className = 'reward-qr-card';
+      card.setAttribute('data-reward-code', reward.code);
+
+      const qrBox = document.createElement('div');
+      qrBox.className = 'reward-qr-box';
+      card.appendChild(qrBox);
+
+      const amount = document.createElement('b');
+      amount.textContent = `Rs. ${Number(reward.amount).toLocaleString('en-IN')}`;
+      card.appendChild(amount);
+
+      const code = document.createElement('span');
+      code.textContent = reward.code;
+      card.appendChild(code);
+
+      const expiry = document.createElement('span');
+      expiry.textContent = `Expires ${formatRewardDate(reward.expiresAt)}`;
+      card.appendChild(expiry);
+
+      generatedQrGrid.appendChild(card);
+
+      if (window.QRCode) {
+        new QRCode(qrBox, {
+          text: rewardPayload(reward),
+          width: 112,
+          height: 112,
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      } else {
+        qrBox.textContent = reward.code;
+      }
+    });
+  }
+
+  qrGeneratorForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const amount = Number.parseInt(rewardAmount.value, 10);
+    const count = Number.parseInt(rewardCount.value, 10);
+
+    if (!Number.isFinite(amount) || amount < 1 || amount > 5000) {
+      qrGenerateMessage.textContent = 'Enter a reward amount between Rs. 1 and Rs. 5000.';
+      return;
+    }
+
+    if (!Number.isFinite(count) || count < 1 || count > 100) {
+      qrGenerateMessage.textContent = 'Generate between 1 and 100 QR codes at a time.';
+      return;
+    }
+
+    const createdAt = new Date();
+    const expiresAt = addMonths(createdAt, 3).toISOString();
+    latestRewardBatch = Array.from({ length: count }, () => ({
+      code: createRewardCode(),
+      amount,
+      createdAt: createdAt.toISOString(),
+      expiresAt,
+      claimedAt: null,
+      upiId: null,
+      payoutStatus: 'unclaimed'
+    }));
+
+    rewardLedger = rewardLedger.concat(latestRewardBatch);
+    saveRewardLedger();
+    renderRewardBatch(latestRewardBatch);
+    updateRewardStats();
+    downloadRewardPdf.disabled = false;
+    qrGenerateMessage.textContent = `${count} QR codes generated for Rs. ${amount}. Expiry: ${formatRewardDate(expiresAt)}.`;
+  });
+
+  downloadRewardPdf.addEventListener('click', () => {
+    if (!latestRewardBatch.length) return;
+
+    const jsPdfCtor = window.jspdf && window.jspdf.jsPDF;
+    if (!jsPdfCtor) {
+      qrGenerateMessage.textContent = 'PDF library is unavailable. Check your internet connection and try again.';
+      return;
+    }
+
+    const doc = new jsPdfCtor({ unit: 'mm', format: 'a4' });
+    const margin = 12;
+    const cardWidth = 58;
+    const cardHeight = 76;
+    const gapX = 7;
+    const gapY = 10;
+    const startY = 18;
+
+    latestRewardBatch.forEach((reward, index) => {
+      const slot = index % 9;
+      if (index > 0 && slot === 0) {
+        doc.addPage();
+      }
+
+      const col = slot % 3;
+      const row = Math.floor(slot / 3);
+      const x = margin + col * (cardWidth + gapX);
+      const y = startY + row * (cardHeight + gapY);
+      const card = Array.from(generatedQrGrid.querySelectorAll('.reward-qr-card'))
+        .find(item => item.getAttribute('data-reward-code') === reward.code);
+      const canvas = card ? card.querySelector('canvas') : null;
+
+      doc.setDrawColor(184, 41, 30);
+      doc.setLineWidth(0.3);
+      doc.rect(x, y, cardWidth, cardHeight);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.text("Sri Sai's Reward", x + 5, y + 8);
+      doc.setFontSize(17);
+      doc.text(`Rs. ${reward.amount}`, x + 5, y + 18);
+
+      if (canvas) {
+        doc.addImage(canvas.toDataURL('image/png'), 'PNG', x + 9, y + 23, 40, 40);
+      } else {
+        doc.setFontSize(8);
+        doc.text(reward.code, x + 5, y + 42, { maxWidth: cardWidth - 10 });
+      }
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+      doc.text(`Code: ${reward.code}`, x + 5, y + 67, { maxWidth: cardWidth - 10 });
+      doc.text(`Expires: ${formatRewardDate(reward.expiresAt)}`, x + 5, y + 72);
+    });
+
+    doc.save(`sri-sais-reward-qr-${Date.now()}.pdf`);
+  });
+
+  function setClaimState(message) {
+    claimState.innerHTML = message;
+  }
+
+  function verifyReward(rawValue) {
+    const code = extractRewardCode(rawValue);
+    claimMessage.textContent = '';
+    activeRewardClaim = null;
+    claimRewardForm.classList.add('reward-hidden');
+
+    if (!code) {
+      setClaimState('No reward code found.');
+      return;
+    }
+
+    const reward = rewardLedger.find(item => item.code === code);
+    if (!reward) {
+      setClaimState(`Reward code <b>${escapeHtml(code)}</b> was not found.`);
+      return;
+    }
+
+    if (reward.claimedAt) {
+      setClaimState(`This QR was already claimed on <b>${formatRewardDate(reward.claimedAt)}</b>.`);
+      return;
+    }
+
+    if (new Date(reward.expiresAt).getTime() <= Date.now()) {
+      setClaimState(`This QR expired on <b>${formatRewardDate(reward.expiresAt)}</b>.`);
+      return;
+    }
+
+    activeRewardClaim = reward;
+    setClaimState(`Verified reward amount: <b>Rs. ${Number(reward.amount).toLocaleString('en-IN')}</b><br>Valid until ${formatRewardDate(reward.expiresAt)}.`);
+    claimRewardForm.classList.remove('reward-hidden');
+    userUpiId.focus();
+  }
+
+  async function stopRewardScanner() {
+    if (!html5QrScanner) return;
+    try {
+      await html5QrScanner.stop();
+      await html5QrScanner.clear();
+    } catch (error) {
+      // Scanner may already be stopped by the browser.
+    }
+    html5QrScanner = null;
+    startScannerBtn.disabled = false;
+    stopScannerBtn.disabled = true;
+    qrReader.textContent = 'Camera scanner opens here';
+  }
+
+  startScannerBtn.addEventListener('click', async () => {
+    if (!window.Html5Qrcode) {
+      claimMessage.textContent = 'Scanner library is unavailable. Paste the QR code manually.';
+      return;
+    }
+
+    if (!window.isSecureContext && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+      claimMessage.textContent = 'Camera scanning needs localhost or HTTPS. Paste the code manually for now.';
+      return;
+    }
+
+    try {
+      html5QrScanner = new Html5Qrcode('qrReader');
+      startScannerBtn.disabled = true;
+      stopScannerBtn.disabled = false;
+      claimMessage.textContent = '';
+      await html5QrScanner.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 230, height: 230 } },
+        decodedText => {
+          verifyReward(decodedText);
+          stopRewardScanner();
+        },
+        () => {}
+      );
+    } catch (error) {
+      startScannerBtn.disabled = false;
+      stopScannerBtn.disabled = true;
+      claimMessage.textContent = 'Camera could not start. Paste the scanned code manually.';
+    }
+  });
+
+  stopScannerBtn.addEventListener('click', stopRewardScanner);
+
+  manualCodeForm.addEventListener('submit', event => {
+    event.preventDefault();
+    verifyReward(manualRewardCode.value);
+  });
+
+  claimRewardForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const upi = userUpiId.value.trim();
+    const upiPattern = /^[a-zA-Z0-9._-]{2,256}@[a-zA-Z0-9._-]{2,64}$/;
+
+    if (!activeRewardClaim) {
+      claimMessage.textContent = 'Scan or verify a reward QR first.';
+      return;
+    }
+
+    if (!upiPattern.test(upi)) {
+      claimMessage.textContent = 'Enter a valid UPI ID like name@upi.';
+      return;
+    }
+
+    const claimedAt = new Date().toISOString();
+    rewardLedger = rewardLedger.map(reward => {
+      if (reward.code !== activeRewardClaim.code) return reward;
+      return {
+        ...reward,
+        claimedAt,
+        upiId: upi,
+        payoutStatus: 'queued'
+      };
+    });
+
+    saveRewardLedger();
+    updateRewardStats();
+    claimRewardForm.classList.add('reward-hidden');
+    claimMessage.textContent = `Rs. ${activeRewardClaim.amount} reward request queued for ${upi}.`;
+    setClaimState('Reward claimed successfully. Server payout integration can release the UPI transfer.');
+    activeRewardClaim = null;
+    userUpiId.value = '';
+    manualRewardCode.value = '';
+  });
+
+  updateRewardStats();
 
   // ---------------- B2B WHOLESALE BAG CALCULATOR ----------------
   const calcWeight = document.getElementById('calcWeight');
