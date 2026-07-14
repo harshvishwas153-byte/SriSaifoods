@@ -48,4 +48,15 @@ module.exports = {
 
   // Optional webhook URL for Cashfree to notify about payout status changes
   CASHFREE_NOTIFY_URL: optionalEnv("CASHFREE_NOTIFY_URL", null),
+
+  // ===== BREVO EMAIL SERVICE CONFIGURATION =====
+  // Used for OTP-based admin authentication
+  // Get API key from: https://app.brevo.com/settings/keys/api
+  BREVO_API_KEY: optionalEnv("BREVO_API_KEY", null),
+
+  // From email address (must be verified in Brevo)
+  FROM_EMAIL: optionalEnv("FROM_EMAIL", "noreply@srisaifoods.com"),
+
+  // From name (displayed in recipient's email client)
+  FROM_NAME: optionalEnv("FROM_NAME", "Sri Sai's Fryums"),
 };

@@ -9,6 +9,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 
 const { CORS_ORIGIN, NODE_ENV } = require("./config/env");
+const authRoutes = require("./routes/auth.routes");
 const rewardRoutes = require("./routes/reward.routes");
 const adminRoutes = require("./routes/admin.routes");
 const adminRewardsRoutes = require("./routes/admin-rewards.routes");
@@ -29,6 +30,7 @@ app.get("/health", (req, res) => {
 });
 
 // ---- Routes ----
+app.use("/api/auth", authRoutes);
 app.use("/api/reward", rewardRoutes);
 app.use("/api/admin/reward", adminRoutes);
 app.use("/api/admin/rewards", adminRewardsRoutes);
