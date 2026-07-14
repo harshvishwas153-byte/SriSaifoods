@@ -112,6 +112,10 @@ exports.verifyOTP = asyncHandler(async (req, res) => {
 
   try {
     // Find the OTP record
+    console.log("=== VERIFY OTP REQUEST ===");
+console.log("Email:", email);
+console.log("OTP:", otp);
+
     const otpRecord = await prisma.adminOTP.findUnique({
       where: {
         email_otp: {
@@ -120,7 +124,7 @@ exports.verifyOTP = asyncHandler(async (req, res) => {
         },
       },
     });
-
+console.log("Database Record:", otpRecord);
     // Check if OTP exists
     if (!otpRecord) {
       throw new ApiError(400, "Invalid OTP");
