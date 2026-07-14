@@ -3,6 +3,7 @@
 const { PrismaClient } = require("@prisma/client");
 const crypto = require("crypto");
 const BrevoService = require("../services/brevo.service");
+const adminSessionService = require("../services/adminSession.service");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 
@@ -13,7 +14,7 @@ const prisma = new PrismaClient();
  * @returns {string} 6-digit OTP
  */
 function generateOTP() {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  return String(crypto.randomInt(100000, 1000000));
 }
 
 /**
@@ -111,10 +112,7 @@ exports.verifyOTP = asyncHandler(async (req, res) => {
   }
 
   try {
-    // Find the OTP record
-    console.log("=== VERIFY OTP REQUEST ===");
-console.log("Email:", email);
-console.log("OTP:", otp);
+    console.log(`[Auth] Verifying OTP for ${email.toLowerCase()}`);
 
     const otpRecord = await prisma.adminOTP.findUnique({
       where: {
@@ -124,7 +122,7 @@ console.log("OTP:", otp);
         },
       },
     });
-console.log("Database Record:", otpRecord);
+
     // Check if OTP exists
     if (!otpRecord) {
       throw new ApiError(400, "Invalid OTP");
@@ -146,12 +144,7 @@ console.log("Database Record:", otpRecord);
       data: { verified: true },
     });
 
-    // Generate a token/session (in production, use JWT)
-    // For now, we'll return a simple session identifier
-    const sessionId = crypto.randomBytes(32).toString("hex");
-
-    // Optionally store session in database or cache (Redis)
-    // For this implementation, frontend will use sessionId + email combination
+    const session = adminSessionService.createSession(email);
 
     console.log(
       `[Auth] OTP verified successfully for ${email} (OTP ID: ${otpRecord.id})`
@@ -162,8 +155,9 @@ console.log("Database Record:", otpRecord);
       message: "OTP verified successfully",
       email: email,
       verified: true,
-      // Return the sessionId for frontend to use
-      sessionId: sessionId,
+      sessionToken: session.token,
+      expiresAt: session.expiresAt,
+      expiresIn: session.expiresIn,
     });
   } catch (error) {
     // If error is from validation, it's already an ApiError
@@ -177,11 +171,29 @@ console.log("Database Record:", otpRecord);
 });
 
 /**
- * POST /api/auth/logout (optional)
- * Clear OTP session
+ * GET /api/auth/session
+ * Validate the current admin session
+ */
+exports.getSession = asyncHandler(async (req, res) => {
+  const token = adminSessionService.getTokenFromRequest(req);
+  const session = adminSessionService.validateSessionToken(token);
+
+  res.status(200).json({
+    success: true,
+    authenticated: true,
+    email: session.email,
+    expiresAt: session.expiresAt,
+  });
+});
+
+/**
+ * POST /api/auth/logout
+ * Clear admin session
  */
 exports.logout = asyncHandler(async (req, res) => {
-  // In a real implementation, invalidate the session in database/cache
+  const token = adminSessionService.getTokenFromRequest(req);
+  adminSessionService.destroySessionToken(token);
+
   res.status(200).json({
     success: true,
     message: "Logged out successfully",

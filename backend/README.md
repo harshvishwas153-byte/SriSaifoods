@@ -61,7 +61,7 @@ backend/
 | `src/middleware/errorHandler.js` | Any error thrown anywhere in a route (via `throw new ApiError(...)` or any unexpected exception) ends up here and is turned into a consistent `{ success: false, error }` JSON response. |
 | `src/middleware/notFound.js` | Catches requests to URLs that don't match any route and returns a clean 404 JSON body instead of Express's default HTML error page. |
 | `src/middleware/rateLimiter.js` | Limits claim attempts per IP (20 per 15 minutes) so someone can't brute-force guess valid tokens. |
-| `src/middleware/adminAuth.js` | Requires an `x-admin-key` header matching `ADMIN_API_KEY` before the admin generate route will run. If `ADMIN_API_KEY` isn't set, the route is disabled entirely (returns 503). |
+| `src/middleware/adminAuth.js` | Requires an OTP admin session in the `Authorization: Bearer <sessionToken>` header before admin reward routes will run. |
 | `src/utils/ApiError.js` | A tiny custom `Error` subclass that carries an HTTP status code, so `throw new ApiError(404, 'not found')` is all a service needs to do — `errorHandler.js` handles the rest. |
 | `src/utils/asyncHandler.js` | Express doesn't automatically catch errors thrown inside `async` functions. This wrapper does, so you never need a manual `try/catch` in a controller. |
 
@@ -157,9 +157,9 @@ requested. Wire the actual payout call into `reward.service.js` →
 ### Bonus: `POST /api/admin/reward/generate`
 Not part of the original spec, but included because the frontend's
 Admin dashboard already has a "Generate Reward QR" form with nothing
-to call. Disabled by default — set `ADMIN_API_KEY` in `.env` to enable it.
+to call. Log in with the OTP admin flow first, then send the returned session token.
 
-**Headers:** `x-admin-key: <your ADMIN_API_KEY>`
+**Headers:** `Authorization: Bearer <sessionToken>`
 **Body:**
 ```json
 { "amount": 10, "count": 50, "campaign": "diwali-2026" }

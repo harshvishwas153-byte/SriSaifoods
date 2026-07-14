@@ -2218,9 +2218,6 @@
               </div>
             </div>
 
-            <!-- Hidden field for admin API key (used for backend calls) -->
-            <input id="adminApiKey" type="hidden" value="">
-
             <div class="reward-field">
               <label for="rewardAmount">Rs. Amount in each QR</label>
               <input id="rewardAmount" type="number" min="1" max="5000" step="1" value="10" required>
@@ -2237,6 +2234,9 @@
               <button class="reward-btn light" id="downloadRewardPdf" type="button" disabled>
                 <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
                 Download PDF
+              </button>
+              <button class="reward-btn light" id="adminLogoutBtn" type="button">
+                Logout
               </button>
             </div>
           </form>
@@ -2889,7 +2889,7 @@
 
   // ---------------- REWARD QR DASHBOARD ----------------
   const REWARD_STORAGE_KEY = 'sriSaisRewards.v1';
-  const ADMIN_API_KEY_STORAGE = 'sriSaisAdminKey.v1';
+  const ADMIN_SESSION_STORAGE_KEY = 'sriSaisAdminSession.v1';
   const API_BASE_URL = 'https://srisaifoods.onrender.com';
   
   const rewardMenuBtns = document.querySelectorAll('.reward-menu-btn');
@@ -2905,9 +2905,9 @@
   const qrGeneratorForm = document.getElementById('qrGeneratorForm');
   const rewardAmount = document.getElementById('rewardAmount');
   const rewardCount = document.getElementById('rewardCount');
-  const adminApiKey = document.getElementById('adminApiKey');
   const generatedQrGrid = document.getElementById('generatedQrGrid');
   const downloadRewardPdf = document.getElementById('downloadRewardPdf');
+  const adminLogoutBtn = document.getElementById('adminLogoutBtn');
   const qrGenerateMessage = document.getElementById('qrGenerateMessage');
   const rewardIssuedCount = document.getElementById('rewardIssuedCount');
   const rewardActiveValue = document.getElementById('rewardActiveValue');
@@ -2925,6 +2925,7 @@
   let latestRewardBatch = [];
   let activeRewardClaim = null;
   let html5QrScanner = null;
+  let adminSession = loadAdminSession();
 
   function requireRewardElement(element, selector) {
     if (!element) {
@@ -2937,6 +2938,10 @@
     requireRewardElement(adminLoginMessage, '#adminLoginMessage');
     adminLoginMessage.textContent = message;
     adminLoginMessage.classList.toggle('strong', isError);
+  }
+
+  function getResponseMessage(data, fallback) {
+    return data.message || data.error || fallback;
   }
 
   async function parseJsonResponse(response, context) {
@@ -2967,14 +2972,67 @@
     localStorage.setItem(REWARD_STORAGE_KEY, JSON.stringify(rewardLedger));
   }
 
-  function addMonths(date, months) {
-    const copy = new Date(date.getTime());
-    const day = copy.getDate();
-    copy.setMonth(copy.getMonth() + months);
-    if (copy.getDate() !== day) {
-      copy.setDate(0);
+  function loadAdminSession() {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(ADMIN_SESSION_STORAGE_KEY) || 'null');
+      if (saved && saved.sessionToken && saved.expiresAt) {
+        return saved;
+      }
+    } catch (error) {
+      console.error('Admin session load error:', error);
     }
-    return copy;
+    return null;
+  }
+
+  function saveAdminSession(session) {
+    if (!session || !session.sessionToken) {
+      throw new Error('Backend verified OTP but did not return an admin session.');
+    }
+
+    adminSession = {
+      sessionToken: session.sessionToken,
+      email: session.email || adminEmail.value.trim().toLowerCase(),
+      expiresAt: session.expiresAt
+    };
+
+    sessionStorage.setItem(ADMIN_SESSION_STORAGE_KEY, JSON.stringify(adminSession));
+  }
+
+  function clearAdminSession() {
+    adminSession = null;
+    sessionStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
+  }
+
+  function getAdminAuthHeaders(extraHeaders = {}) {
+    if (!adminSession || !adminSession.sessionToken) {
+      throw new Error('Admin session expired. Please log in again.');
+    }
+
+    return {
+      ...extraHeaders,
+      Authorization: `Bearer ${adminSession.sessionToken}`
+    };
+  }
+
+  async function adminFetch(url, options = {}) {
+    const response = await fetch(url, {
+      ...options,
+      headers: getAdminAuthHeaders(options.headers || {})
+    });
+
+    const data = await parseJsonResponse(response, 'Admin request');
+
+    if (response.status === 401) {
+      clearAdminSession();
+      showAdminLogin(getResponseMessage(data, 'Admin session expired. Please log in again.'));
+      throw new Error(getResponseMessage(data, 'Admin session expired. Please log in again.'));
+    }
+
+    if (!response.ok) {
+      throw new Error(getResponseMessage(data, `Backend error: ${response.status}`));
+    }
+
+    return data;
   }
 
   function formatRewardDate(value) {
@@ -2993,21 +3051,6 @@
       '"': '&quot;',
       "'": '&#39;'
     }[char]));
-  }
-
-  function randomToken(length) {
-    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    if (window.crypto && window.crypto.getRandomValues) {
-      const bytes = new Uint8Array(length);
-      window.crypto.getRandomValues(bytes);
-      return Array.from(bytes, byte => alphabet[byte % alphabet.length]).join('');
-    }
-    return Array.from({ length }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
-  }
-
-  function createRewardCode() {
-    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    return `SSR-${datePart}-${randomToken(8)}`;
   }
 
   function rewardPayload(reward) {
@@ -3112,25 +3155,72 @@
       : 'Admin dashboard ready. No reward QR codes generated yet.';
   }
 
-  function saveAdminAuthentication() {
-    try {
-      localStorage.setItem("rewardAdminAuthenticated", "true");
-    } catch (error) {
-      console.error("Admin Auth Storage Error:", error);
-      console.error(error.stack);
-      throw new Error("Login verified, but this browser could not save the admin session.");
-    }
+  function showAdminLogin(message = '') {
+    requireRewardElement(adminLoginPanel, '#adminLoginPanel');
+    requireRewardElement(adminGeneratorPanel, '#adminGeneratorPanel');
+    adminLoginPanel.classList.remove('reward-hidden');
+    adminGeneratorPanel.classList.add('reward-hidden');
+    adminOtpForm.classList.add('reward-hidden');
+    adminOtp.value = '';
+    setAdminLoginMessage(message, Boolean(message));
   }
 
-  function openAdminDashboard() {
+  async function refreshAdminRewards() {
+    if (!adminSession) return;
+
+    const data = await adminFetch(`${API_BASE_URL}/api/admin/rewards?limit=1000`);
+    const rewards = Array.isArray(data.rewards) ? data.rewards : [];
+
+    rewardLedger = rewards.map(reward => ({
+      code: reward.token,
+      amount: reward.cashbackAmount,
+      createdAt: reward.createdAt,
+      expiresAt: reward.expiresAt,
+      claimedAt: reward.redeemedAt,
+      upiId: reward.redeemedUpiId,
+      payoutStatus: reward.payoutStatus || (reward.status === 'REDEEMED' ? 'claimed' : 'unclaimed'),
+      token: reward.token,
+      status: reward.status
+    }));
+
+    saveRewardLedger();
+  }
+
+  async function openAdminDashboard({ restore = false } = {}) {
     console.log("Opening admin dashboard...");
     requireRewardElement(adminOtpForm, '#adminOtpForm');
     adminOtpForm.classList.add("reward-hidden");
-    saveAdminAuthentication();
     switchRewardPanel("admin");
+    if (restore) {
+      await refreshAdminRewards();
+    }
     renderRewardGrid();
     updateRewardStats();
     console.log("Dashboard loaded.");
+  }
+
+  async function restoreAdminSession() {
+    if (!adminSession || !adminSession.sessionToken) {
+      showAdminLogin();
+      return;
+    }
+
+    try {
+      setAdminLoginMessage('Restoring admin session...');
+      const data = await adminFetch(`${API_BASE_URL}/api/auth/session`);
+      adminSession = {
+        ...adminSession,
+        email: data.email || adminSession.email,
+        expiresAt: data.expiresAt || adminSession.expiresAt
+      };
+      sessionStorage.setItem(ADMIN_SESSION_STORAGE_KEY, JSON.stringify(adminSession));
+      setAdminLoginMessage('Admin session restored.');
+      await openAdminDashboard({ restore: true });
+    } catch (error) {
+      console.error('Admin session restore error:', error);
+      clearAdminSession();
+      showAdminLogin(error.message || 'Admin session expired. Please log in again.');
+    }
   }
 
   rewardMenuBtns.forEach(btn => {
@@ -3141,8 +3231,13 @@
     event.preventDefault();
 
     const email = adminEmail.value.trim().toLowerCase();
+    const submitBtn = adminEmailForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
 
     try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<svg style="animation: spin 1s linear infinite;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="15.7 47.1"/></svg> Sending...';
+        setAdminLoginMessage("Sending OTP...");
         console.log("Sending OTP...");
         const response = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
             method: "POST",
@@ -3155,7 +3250,7 @@
         const data = await parseJsonResponse(response, "Send OTP");
 
         if (!response.ok) {
-            setAdminLoginMessage(data.message || "Failed to send OTP", true);
+            setAdminLoginMessage(getResponseMessage(data, "Failed to send OTP"), true);
             return;
         }
 
@@ -3170,6 +3265,9 @@
         console.error("OTP Send Error:", err);
         console.error(err.stack);
         setAdminLoginMessage(err.message || "Unable to connect to server.", true);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
     }
 });
 
@@ -3178,8 +3276,13 @@
 
     const email = adminEmail.value.trim().toLowerCase();
     const otp = adminOtp.value.trim();
+    const submitBtn = adminOtpForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
 
     try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<svg style="animation: spin 1s linear infinite;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="15.7 47.1"/></svg> Verifying...';
+        setAdminLoginMessage("Verifying OTP...");
         console.log("Verifying OTP...");
         const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
             method: "POST",
@@ -3196,17 +3299,21 @@
         console.log("Backend response:", data);
 
         if (!response.ok) {
-            setAdminLoginMessage(data.message || "Invalid OTP", true);
+            setAdminLoginMessage(getResponseMessage(data, "Invalid OTP"), true);
             return;
         }
 
+        saveAdminSession(data);
         setAdminLoginMessage("Login successful.");
-        openAdminDashboard();
+        await openAdminDashboard({ restore: true });
 
     } catch (err) {
         console.error("OTP Verify Error:", err);
         console.error(err.stack);
         setAdminLoginMessage(err.message || "Unable to verify OTP.", true);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
     }
 });
 
@@ -3277,11 +3384,10 @@
 
     try {
       // Call backend API to generate rewards
-      const response = await fetch(`${API_BASE_URL}/api/admin/rewards/generate`, {
+      const result = await adminFetch(`${API_BASE_URL}/api/admin/rewards/generate`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'x-admin-key': adminApiKey.value
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           count: count,
@@ -3290,13 +3396,6 @@
         })
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || `Backend error: ${response.status}`);
-      }
-
-      const result = await response.json();
-      
       if (!result.success || !result.generated) {
         throw new Error('Invalid response from backend');
       }
@@ -3327,6 +3426,32 @@
     } finally {
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalText;
+    }
+  });
+
+  adminLogoutBtn.addEventListener('click', async () => {
+    const originalText = adminLogoutBtn.textContent;
+    adminLogoutBtn.disabled = true;
+    adminLogoutBtn.textContent = 'Logging out...';
+
+    try {
+      if (adminSession) {
+        await fetch(`${API_BASE_URL}/api/auth/logout`, {
+          method: 'POST',
+          headers: getAdminAuthHeaders()
+        });
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      clearAdminSession();
+      latestRewardBatch = [];
+      generatedQrGrid.innerHTML = '';
+      downloadRewardPdf.disabled = true;
+      qrGenerateMessage.textContent = '';
+      showAdminLogin('Logged out successfully.');
+      adminLogoutBtn.disabled = false;
+      adminLogoutBtn.textContent = originalText;
     }
   });
 
@@ -3600,6 +3725,7 @@
     }
   });
 
+  restoreAdminSession();
   updateRewardStats();
 
   // ---------------- B2B WHOLESALE BAG CALCULATOR ----------------

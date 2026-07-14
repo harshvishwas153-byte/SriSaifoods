@@ -5,7 +5,7 @@ const adminController = require("../controllers/admin.controller");
 const router = express.Router();
 
 // POST /api/admin/reward/generate
-// Requires header: x-admin-key: <ADMIN_API_KEY>
+// Requires header: Authorization: Bearer <admin session token>
 router.post("/generate", adminAuth, adminController.generateRewards);
 
 module.exports = router;

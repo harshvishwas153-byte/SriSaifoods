@@ -7,7 +7,7 @@ const router = express.Router();
 /**
  * POST /api/admin/rewards/generate
  * Generates rewards with random cashback amounts from a pool of values.
- * Requires header: x-admin-key: <ADMIN_API_KEY>
+ * Requires header: Authorization: Bearer <admin session token>
  *
  * Request body:
  * {
@@ -21,7 +21,7 @@ router.post("/generate", adminAuth, adminController.generateRandomRewards);
 /**
  * GET /api/admin/rewards
  * Retrieves all generated rewards sorted by newest first.
- * Requires header: x-admin-key: <ADMIN_API_KEY>
+ * Requires header: Authorization: Bearer <admin session token>
  *
  * Query parameters:
  * - limit: number (1-1000, default: 100) - results per page

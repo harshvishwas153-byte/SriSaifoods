@@ -261,8 +261,8 @@ module.exports = {
   // Days a freshly generated QR stays claimable.
   REWARD_EXPIRY_DAYS: Number(process.env.REWARD_EXPIRY_DAYS || 90),
 
-  // Admin QR-generation route is disabled unless this is set.
-  ADMIN_API_KEY: process.env.ADMIN_API_KEY || null,
+  // Optional stable signing secret for OTP admin sessions.
+  ADMIN_SESSION_SECRET: process.env.ADMIN_SESSION_SECRET || null,
 
   CORS_ORIGIN: process.env.CORS_ORIGIN || "*",
 };
@@ -296,8 +296,8 @@ module.exports = {
   // Days a freshly generated QR stays claimable.
   REWARD_EXPIRY_DAYS: Number(process.env.REWARD_EXPIRY_DAYS || 90),
 
-  // Admin QR-generation route is disabled unless this is set.
-  ADMIN_API_KEY: process.env.ADMIN_API_KEY || null,
+  // Optional stable signing secret for OTP admin sessions.
+  ADMIN_SESSION_SECRET: process.env.ADMIN_SESSION_SECRET || null,
 
   CORS_ORIGIN: process.env.CORS_ORIGIN || "*",
 

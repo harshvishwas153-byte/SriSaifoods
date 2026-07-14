@@ -252,7 +252,7 @@ Customer: Receives money in 5-30 minutes
 ### Test 1: Generate Reward
 ```bash
 curl -X POST https://srisaifoods.onrender.com/api/admin/rewards/generate \
-  -H "x-admin-key: f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409" \
+  -H "Authorization: Bearer <sessionToken>" \
   -H "Content-Type: application/json" \
   -d '{
     "count": 1,

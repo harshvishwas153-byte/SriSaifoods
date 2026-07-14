@@ -134,7 +134,7 @@ The backend `.env` does NOT need updates because:
 PORT=4000
 NODE_ENV=development
 DATABASE_URL="postgresql://..."
-ADMIN_API_KEY="f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409"
+ADMIN_SESSION_SECRET="replace-with-a-long-random-secret"
 ```
 
 ---
@@ -204,7 +204,7 @@ GET  https://srisaifoods.onrender.com/api/admin/rewards
 ### Test Admin Reward Generation
 ```bash
 curl -X POST https://srisaifoods.onrender.com/api/admin/rewards/generate \
-  -H "x-admin-key: f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409" \
+  -H "Authorization: Bearer <sessionToken>" \
   -H "Content-Type: application/json" \
   -d '{
     "count": 5,

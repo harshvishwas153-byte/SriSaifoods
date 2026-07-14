@@ -4,7 +4,7 @@ const tokenService = require("../services/token.service");
 
 // POST /api/admin/reward/generate
 // Body: { amount: number, count: number, campaign?: string }
-// Protected by middleware/adminAuth.js (x-admin-key header).
+// Protected by middleware/adminAuth.js (OTP admin session).
 exports.generateRewards = asyncHandler(async (req, res) => {
   const { amount, count, campaign } = req.body || {};
 
@@ -44,7 +44,7 @@ exports.generateRewards = asyncHandler(async (req, res) => {
  *   rewards: number[] (array of cashback values, e.g., [5, 10, 20, 50, 100])
  * }
  *
- * Protected by middleware/adminAuth.js (x-admin-key header).
+ * Protected by middleware/adminAuth.js (OTP admin session).
  * Returns all generated rewards with unique cryptographic tokens.
  */
 exports.generateRandomRewards = asyncHandler(async (req, res) => {
@@ -106,7 +106,7 @@ exports.generateRandomRewards = asyncHandler(async (req, res) => {
 /**
  * GET /api/admin/rewards
  * Retrieves all generated rewards sorted by newest first.
- * Protected by middleware/adminAuth.js (x-admin-key header).
+ * Protected by middleware/adminAuth.js (OTP admin session).
  *
  * Returns paginated results with total count.
  */

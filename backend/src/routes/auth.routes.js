@@ -40,10 +40,17 @@ router.post("/send-otp", authController.sendOTP);
  *   "message": "OTP verified successfully",
  *   "email": "admin@example.com",
  *   "verified": true,
- *   "sessionId": "abc123..."
+ *   "sessionToken": "abc123...",
+ *   "expiresAt": "2026-07-14T12:00:00.000Z"
  * }
  */
 router.post("/verify-otp", authController.verifyOTP);
+
+/**
+ * GET /api/auth/session
+ * Validate current admin session
+ */
+router.get("/session", authController.getSession);
 
 /**
  * POST /api/auth/logout

@@ -65,7 +65,7 @@ model RewardQR {
 
 **Endpoint**: `POST /api/admin/rewards/generate`
 
-**Authentication**: Required - `x-admin-key` header
+**Authentication**: Required - `Authorization: Bearer <sessionToken>` header
 
 **Request**:
 ```json
@@ -380,7 +380,7 @@ Complete reward claim page with backend integration.
 
 1. Import the endpoints below into Postman
 2. Set variable: `base_url` = `https://srisaifoods.onrender.com`
-3. Set variable: `admin_key` = `f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409`
+3. Set variable: `session_token` = the token returned by `/api/auth/verify-otp`
 
 ### Test Sequence
 
@@ -389,7 +389,7 @@ Complete reward claim page with backend integration.
 **Request**:
 ```
 POST {{base_url}}/api/admin/rewards/generate
-Header: x-admin-key: {{admin_key}}
+Header: Authorization: Bearer {{session_token}}
 Body:
 {
   "count": 5,
@@ -651,7 +651,7 @@ PORT=4000
 NODE_ENV=development
 DATABASE_URL="postgresql://user:password@localhost:5432/sri_sai_rewards?schema=public"
 REWARD_EXPIRY_DAYS=90
-ADMIN_API_KEY=f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409
+ADMIN_SESSION_SECRET=replace-with-a-long-random-secret
 CORS_ORIGIN=*
 ```
 

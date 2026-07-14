@@ -102,7 +102,7 @@ Sri Sai Rewards API listening on port 4000
 ```bash
 # Generate a test reward
 curl -X POST https://srisaifoods.onrender.com/api/admin/rewards/generate \
-  -H "x-admin-key: f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409" \
+  -H "Authorization: Bearer <sessionToken>" \
   -H "Content-Type: application/json" \
   -d '{
     "count": 1,
@@ -195,7 +195,7 @@ Check deploy logs for:
 ### Test 1: Small Payout (₹5)
 ```bash
 curl -X POST https://srisaifoods.onrender.com/api/admin/rewards/generate \
-  -H "x-admin-key: f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409" \
+  -H "Authorization: Bearer <sessionToken>" \
   -H "Content-Type: application/json" \
   -d '{"count": 1, "campaign": "Small Test", "rewards": [5]}'
 ```
@@ -205,7 +205,7 @@ Expected: Payout initiates for ₹5
 ### Test 2: Large Payout (₹100)
 ```bash
 curl -X POST https://srisaifoods.onrender.com/api/admin/rewards/generate \
-  -H "x-admin-key: f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409" \
+  -H "Authorization: Bearer <sessionToken>" \
   -H "Content-Type: application/json" \
   -d '{"count": 1, "campaign": "Large Test", "rewards": [100]}'
 ```

@@ -220,9 +220,9 @@ if (result.count === 0) {
 - Configured in middleware/rateLimiter.js
 
 ### Admin Authentication
-- `/api/admin/rewards/generate` requires `x-admin-key` header
-- Key: `f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409`
-- Stored in backend/.env (not in code)
+- `/api/admin/rewards/generate` requires `Authorization: Bearer <sessionToken>` header
+- Session token is returned by `/api/auth/verify-otp`
+- Optional `ADMIN_SESSION_SECRET` can be set in Render to keep token signatures stable across deploys
 
 ---
 
@@ -363,8 +363,8 @@ cd backend
 # Install dependencies
 npm install
 
-# Create .env with ADMIN_API_KEY
-echo 'ADMIN_API_KEY=f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409' >> .env
+# Optional: create .env with ADMIN_SESSION_SECRET
+echo 'ADMIN_SESSION_SECRET=replace-with-a-long-random-secret' >> .env
 
 # Run migrations
 npx prisma migrate deploy
@@ -416,8 +416,8 @@ npx prisma studio
 
 ### Common Issues & Solutions
 
-**Q: "Admin routes are disabled"**
-A: Set `ADMIN_API_KEY` in `.env` and restart backend
+**Q: "Admin session expired"**
+A: Log in again with email OTP. If this happens after every deploy, set `ADMIN_SESSION_SECRET` in Render.
 
 **Q: "Token not found"**
 A: Verify token from database: `SELECT token FROM reward_qr LIMIT 1;`
