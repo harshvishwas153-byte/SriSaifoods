@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claim Your Reward — Sri Sai's Fryums</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --marigold: #F2A71B;
+    --turmeric: #D97A0A;
+    --maroon: #B8291E;
+    --cocoa: #2B1A0F;
+    --cream: #FFF6E4;
+    --leaf: #4C7A3B;
+    --shadow-soft: 0 10px 30px rgba(43,26,15,0.08);
+    --shadow-card: 0 15px 35px rgba(43,26,15,0.12);
+    --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    --success-green: #2ecc71;
+    --error-red: #e74c3c;
+  }
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  html { scroll-behavior: smooth; }
+  
+  body {
+    font-family: 'Hind', sans-serif;
+    background: linear-gradient(160deg, var(--cocoa) 0%, #3a2416 100%);
+    color: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  
+  h1, h2, h3 { font-family: 'Baloo 2', sans-serif; }
+  
+  .claim-container {
+    max-width: 480px;
+    width: 100%;
+  }
+  
+  .claim-card {
+    background: #fffaf0;
+    color: var(--cocoa);
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: var(--shadow-card);
+    text-align: center;
+  }
+  
+  .claim-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--marigold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 1.8rem;
+  }
+  
+  .claim-icon.success {
+    background: var(--success-green);
+    animation: popScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  
+  .claim-icon.error {
+    background: var(--error-red);
+  }
+  
+  @keyframes popScale {
+    0% { transform: scale(0.3); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .claim-icon.loading {
+    animation: spin 1s linear infinite;
+  }
+  
+  .claim-card h1 {
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+  }
+  
+  .claim-card p.sub {
+    color: #5a3d20;
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+  
+  .reward-amount {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(242,167,27,0.2), rgba(217,122,10,0.2));
+    border: 2px solid var(--marigold);
+    border-radius: 15px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+  }
+  
+  .reward-amount .label {
+    font-size: 0.75rem;
+    color: #5a3d20;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .reward-amount .value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--maroon);
+    font-family: 'Baloo 2', sans-serif;
+  }
+  
+  .reward-details {
+    background: rgba(43,26,15,0.04);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(43,26,15,0.08);
+    font-size: 0.9rem;
+  }
+  
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+  
+  .detail-label {
+    color: #5a3d20;
+    font-weight: 600;
+  }
+  
+  .detail-value {
+    color: var(--cocoa);
+    font-weight: 600;
+  }
+  
+  .field {
+    text-align: left;
+    margin-bottom: 16px;
+  }
+  
+  .field label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #5a3d20;
+    margin-bottom: 8px;
+  }
+  
+  .field input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 2px solid rgba(43,26,15,0.15);
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: #fff;
+    transition: var(--transition-smooth);
+  }
+  
+  .field input:focus {
+    outline: none;
+    border-color: var(--marigold);
+    box-shadow: 0 0 0 3px rgba(242,167,27,0.15);
+  }
+  
+  .field input:disabled {
+    background: #f5f5f5;
+    color: #999;
+  }
+  
+  .btn-claim {
+    width: 100%;
+    background: var(--maroon);
+    color: var(--cream);
+    border: none;
+    padding: 13px;
+    border-radius: 999px;
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .btn-claim:hover:not(:disabled) {
+    background: var(--marigold);
+    color: var(--cocoa);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+  }
+  
+  .btn-claim:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .status-message {
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    display: none;
+  }
+  
+  .status-message.error {
+    background: rgba(231,76,60,0.15);
+    border: 1px solid rgba(231,76,60,0.3);
+    color: #c0392b;
+    display: block;
+  }
+  
+  .status-message.success {
+    background: rgba(46,204,113,0.15);
+    border: 1px solid rgba(46,204,113,0.3);
+    color: #229954;
+    display: block;
+  }
+  
+  .status-message.info {
+    background: rgba(52,152,219,0.15);
+    border: 1px solid rgba(52,152,219,0.3);
+    color: #2E86C1;
+    display: block;
+  }
+  
+  .loading-state {
+    display: none;
+  }
+  
+  .loading-state.active {
+    display: block;
+  }
+  
+  .success-state {
+    display: none;
+  }
+  
+  .success-state.active {
+    display: block;
+  }
+  
+  .error-state {
+    display: none;
+  }
+  
+  .error-state.active {
+    display: block;
+  }
+  
+  .initial-state {
+    display: block;
+  }
+  
+  .initial-state.hidden {
+    display: none;
+  }
+  
+  .success-details {
+    background: rgba(46,204,113,0.08);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 20px 0;
+    text-align: left;
+    font-size: 0.95rem;
+  }
+  
+  .success-details .detail-row {
+    border-bottom: 1px solid rgba(46,204,113,0.2);
+    padding: 10px 0;
+  }
+  
+  .back-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 2px solid var(--maroon);
+    color: var(--maroon);
+    text-decoration: none;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition-smooth);
+    font-family: 'Baloo 2', sans-serif;
+    cursor: pointer;
+  }
+  
+  .back-link:hover {
+    background: var(--maroon);
+    color: var(--cream);
+  }
+  
+  .error-icon {
+    font-size: 2.4rem;
+    margin-bottom: 16px;
+  }
+  
+  .loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: var(--cream);
+    animation: spin 0.8s linear infinite;
+  }
+</style>
+</head>
+<body>
+
+  <div class="claim-container">
+    <div class="claim-card">
+      
+      <!-- LOADING STATE -->
+      <div class="loading-state" id="loadingState">
+        <div class="claim-icon loading">⏳</div>
+        <h1>Verifying Reward</h1>
+        <p class="sub">Please wait while we verify your reward QR code...</p>
+      </div>
+
+      <!-- INITIAL STATE (After verification) -->
+      <div class="initial-state" id="initialState">
+        <div class="claim-icon success">🎁</div>
+        <h1>Congratulations!</h1>
+        <p class="sub">You won a reward! Claim your cashback now.</p>
+        
+        <div class="reward-amount">
+          <div class="label">Cashback Amount</div>
+          <div class="value" id="rewardAmount">₹10</div>
+        </div>
+
+        <div class="reward-details">
+          <div class="detail-row">
+            <span class="detail-label">Campaign</span>
+            <span class="detail-value" id="campaignName">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Expires</span>
+            <span class="detail-value" id="expiryDate">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status</span>
+            <span class="detail-value" id="rewardStatus">Active</span>
+          </div>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+
+        <form id="claimForm">
+          <div class="field">
+            <label for="upiId">Your UPI ID</label>
+            <input 
+              id="upiId" 
+              type="text" 
+              placeholder="name@upi" 
+              autocomplete="off"
+              pattern="^[\w.\-]{2,256}@[a-zA-Z0-9.\-]{2,64}$"
+              required
+            >
+          </div>
+          <button class="btn-claim" type="submit" id="claimButton">
+            <span>Send My Cashback</span>
+          </button>
+        </form>
+
+        <a class="back-link" href="index.html#rewards">← Back to Rewards</a>
+      </div>
+
+      <!-- SUCCESS STATE -->
+      <div class="success-state" id="successState">
+        <div class="claim-icon success">✓</div>
+        <h1>Reward Claimed!</h1>
+        <p class="sub">Your cashback request has been received and is being processed.</p>
+
+        <div class="success-details">
+          <div class="detail-row">
+            <span class="detail-label">Amount</span>
+            <span class="detail-value" id="successAmount">₹10</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">UPI ID</span>
+            <span class="detail-value" id="successUpi">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status</span>
+            <span class="detail-value">Queued for Payout</span>
+          </div>
+        </div>
+
+        <p class="sub" style="margin-top: 20px;">
+          Your payment will be transferred to your UPI account shortly. You'll receive an SMS confirmation once it's processed.
+        </p>
+
+        <a class="back-link" href="index.html#rewards">← Back to Home</a>
+      </div>
+
+      <!-- ERROR STATE -->
+      <div class="error-state" id="errorState">
+        <div class="claim-icon error">✕</div>
+        <h1>Unable to Claim</h1>
+        <p class="sub" id="errorMessage">An error occurred. Please try again.</p>
+
+        <div class="status-message error" id="errorDetails" style="display: block; margin-top: 16px;"></div>
+
+        <a class="back-link" href="index.html#rewards">← Back to Home</a>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  // Configuration
+  const API_BASE_URL = 'http://localhost:4000';
+  
+  // State management
+  let currentReward = null;
+  let claimInProgress = false;
+
+  // DOM elements
+  const loadingState = document.getElementById('loadingState');
+  const initialState = document.getElementById('initialState');
+  const successState = document.getElementById('successState');
+  const errorState = document.getElementById('errorState');
+  
+  const claimForm = document.getElementById('claimForm');
+  const upiInput = document.getElementById('upiId');
+  const claimButton = document.getElementById('claimButton');
+  const statusMessage = document.getElementById('statusMessage');
+
+  /**
+   * Format date for display
+   */
+function formatDate(dateString) {
+    console.log("expiresAt =", dateString);
+
+    if (!dateString) {
+        return "No Expiry";
+    }
+
+    const date = new Date(dateString);
+
+    console.log("parsed =", date);
+
+    if (isNaN(date.getTime())) {
+        console.error("Invalid date received:", dateString);
+        return "Invalid Date";
+    }
+
+    return new Intl.DateTimeFormat("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    }).format(date);
+}
+
+  /**
+   * Show loading state
+   */
+  function showLoading() {
+    loadingState.style.display = 'block';
+    initialState.classList.add('hidden');
+    successState.classList.remove('active');
+    errorState.classList.remove('active');
+  }
+
+  /**
+   * Show initial/verification state
+   */
+  function showInitialState(reward) {
+    currentReward = reward;
+    
+    // Update UI
+    document.getElementById('rewardAmount').textContent = `₹${reward.cashbackAmount}`;
+    document.getElementById('campaignName').textContent = reward.campaign || 'General Reward';
+    document.getElementById('expiryDate').textContent = formatDate(reward.expiresAt);
+    document.getElementById('rewardStatus').textContent = reward.status;
+    
+    // Show state
+    loadingState.style.display = 'none';
+    initialState.classList.remove('hidden');
+    successState.classList.remove('active');
+    errorState.classList.remove('active');
+    
+    // Focus on UPI input
+    upiInput.focus();
+  }
+
+  /**
+   * Show success state
+   */
+  function showSuccess(reward, upiId) {
+    document.getElementById('successAmount').textContent = `₹${reward.cashbackAmount}`;
+    document.getElementById('successUpi').textContent = upiId;
+    
+    loadingState.style.display = 'none';
+    initialState.classList.add('hidden');
+    successState.classList.add('active');
+    errorState.classList.remove('active');
+  }
+
+  /**
+   * Show error state
+   */
+  function showError(message, details = null) {
+    document.getElementById('errorMessage').textContent = message;
+    
+    if (details) {
+      const errorDetails = document.getElementById('errorDetails');
+      errorDetails.innerHTML = `<strong>Details:</strong> ${escapeHtml(details)}`;
+    }
+    
+    loadingState.style.display = 'none';
+    initialState.classList.add('hidden');
+    successState.classList.remove('active');
+    errorState.classList.add('active');
+  }
+
+  /**
+   * Escape HTML to prevent XSS
+   */
+  function escapeHtml(text) {
+    const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    };
+    return String(text).replace(/[&<>"']/g, char => map[char]);
+  }
+
+  /**
+   * Verify reward by token
+   */
+  async function verifyReward(token) {
+    if (!token) {
+      showError('No reward token provided', 'Please access this page via a valid QR code link.');
+      return;
+    }
+
+    try {
+      showLoading();
+      
+      const response = await fetch(`${API_BASE_URL}/api/reward/${encodeURIComponent(token)}`);
+      const result = await response.json();
+      console.log(result);
+
+      if (!result.valid) {
+        showError(
+          'Reward Not Found',
+          result.error || 'This reward code is invalid or has already been claimed.'
+        );
+        return;
+      }
+
+      // Check status
+      if (result.redeemed) {
+        showError('Already Claimed', 'This reward has already been claimed. Each QR code can only be claimed once.');
+        return;
+      }
+
+      if (result.expired) {
+        showError('Reward Expired', `This reward expired on ${formatDate(result.expiresAt)}.`);
+        return;
+      }
+
+      // Reward is valid
+      showInitialState(result);
+    } catch (error) {
+      console.error('Verify reward error:', error);
+      showError(
+        'Connection Error',
+        `Failed to verify reward: ${error.message}. Make sure the backend is running.`
+      );
+    }
+  }
+
+  /**
+   * Claim reward
+   */
+  async function claimReward(token, upiId) {
+    if (claimInProgress) return;
+    
+    claimInProgress = true;
+    claimButton.disabled = true;
+    claimButton.innerHTML = '<span class="loading-spinner"></span> Processing...';
+    statusMessage.classList.remove('error', 'success', 'info');
+    statusMessage.innerHTML = '';
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reward/claim`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token: token,
+          upiId: upiId.trim()
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || result.error || 'Claim failed');
+      }
+
+      if (!result.success) {
+        throw new Error(result.message || 'Claim failed');
+      }
+
+      // Success
+      showSuccess(currentReward, upiId);
+    } catch (error) {
+      console.error('Claim reward error:', error);
+      claimButton.disabled = false;
+      claimButton.innerHTML = '<span>Send My Cashback</span>';
+      
+      statusMessage.classList.add('error');
+      statusMessage.innerHTML = `<strong>Error:</strong> ${escapeHtml(error.message)}`;
+      
+      claimInProgress = false;
+    }
+  }
+
+  /**
+   * Initialize on page load
+   */
+  function init() {
+    // Get token from URL
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+
+    // Set up form handler
+    claimForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const upiId = upiInput.value.trim();
+      
+      if (!upiId) {
+        statusMessage.classList.add('error');
+        statusMessage.innerHTML = '<strong>Error:</strong> Please enter your UPI ID';
+        return;
+      }
+
+      // Validate UPI format
+      const upiPattern = /^[\w.\-]{2,256}@[a-zA-Z0-9.\-]{2,64}$/;
+      if (!upiPattern.test(upiId)) {
+        statusMessage.classList.add('error');
+        statusMessage.innerHTML = '<strong>Error:</strong> Invalid UPI ID format. Example: name@upi';
+        return;
+      }
+
+      if (token) {
+        claimReward(token, upiId);
+      }
+    });
+
+    // Verify reward on load
+    verifyReward(token);
+  }
+
+  // Start when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>
+
+</body>
+</html>

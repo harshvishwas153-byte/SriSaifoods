@@ -107,6 +107,9 @@
   @keyframes sweepHighlight {
     to { transform: scaleX(1); }
   }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 
   /* ---------------- GARLAND BORDER MOTIF ---------------- */
   .garland {
@@ -1650,7 +1653,8 @@
       <li><a href="#about">Our Plant</a></li>
       <li><a href="#fryer">Snack Fryer</a></li>
       <li><a href="#products">Products Range</a></li>
-      <li><a href="#rewards">Rewards</a></li>
+      <li><a href="rewards.html">🎁 Rewards</a></li>
+      <li><a href="#rewards">QR Dashboard</a></li>
       <li><a href="#calculator" class="btn-nav-b2b">Wholesale Portal</a></li>
     </ul>
   </nav>
@@ -2213,6 +2217,9 @@
               </div>
             </div>
 
+            <!-- Hidden field for admin API key (used for backend calls) -->
+            <input id="adminApiKey" type="hidden" value="">
+
             <div class="reward-field">
               <label for="rewardAmount">Rs. Amount in each QR</label>
               <input id="rewardAmount" type="number" min="1" max="5000" step="1" value="10" required>
@@ -2415,7 +2422,11 @@
       <a href="#about">Our Plant</a>
       <a href="#fryer">Snack Fryer</a>
       <a href="#products">Products Range</a>
-      <a href="#rewards">Rewards</a>
+      <a href="rewards.html">🎁 Rewards</a>
+      <a href="#rewards">QR Dashboard</a>
+      <a href="rewards.html#terms">Terms</a>
+      <a href="rewards.html#privacy">Privacy</a>
+      <a href="#contact">Support</a>
       <a href="#calculator">Wholesale Portal</a>
     </div>
 
@@ -2877,6 +2888,9 @@
 
   // ---------------- REWARD QR DASHBOARD ----------------
   const REWARD_STORAGE_KEY = 'sriSaisRewards.v1';
+  const ADMIN_API_KEY_STORAGE = 'sriSaisAdminKey.v1';
+  const API_BASE_URL = 'http://localhost:4000';
+  
   const rewardMenuBtns = document.querySelectorAll('.reward-menu-btn');
   const rewardPanels = document.querySelectorAll('[data-reward-panel]');
   const rewardTotalPill = document.getElementById('rewardTotalPill');
@@ -2890,6 +2904,7 @@
   const qrGeneratorForm = document.getElementById('qrGeneratorForm');
   const rewardAmount = document.getElementById('rewardAmount');
   const rewardCount = document.getElementById('rewardCount');
+  const adminApiKey = document.getElementById('adminApiKey');
   const generatedQrGrid = document.getElementById('generatedQrGrid');
   const downloadRewardPdf = document.getElementById('downloadRewardPdf');
   const qrGenerateMessage = document.getElementById('qrGenerateMessage');
@@ -2969,18 +2984,31 @@
   }
 
   function rewardPayload(reward) {
-    return JSON.stringify({
-      type: 'SS_REWARD',
-      code: reward.code,
-      amount: reward.amount,
-      expiresAt: reward.expiresAt
-    });
+    // Return a URL pointing to reward-claim.html with the actual backend token
+    const baseUrl = window.location.origin + '/reward-claim.html';
+    return `${baseUrl}?token=${encodeURIComponent(reward.code || reward.token)}`;
   }
 
   function extractRewardCode(rawValue) {
     const value = String(rawValue || '').trim();
     if (!value) return null;
 
+    // Try to extract token from URL query parameter
+    try {
+      const url = new URL(value);
+      const token = url.searchParams.get('token');
+      if (token) return token;
+    } catch (error) {
+      // Not a valid URL, continue to other methods
+    }
+
+    // Try to extract from ?token= pattern
+    const urlToken = value.match(/[?&](?:code|reward|token)=([^&]+)/i);
+    if (urlToken) {
+      return decodeURIComponent(urlToken[1]);
+    }
+
+    // Try to parse as JSON (for backward compatibility)
     try {
       const parsed = JSON.parse(value);
       if (parsed && parsed.type === 'SS_REWARD' && parsed.code) {
@@ -2994,11 +3022,7 @@
       return value.split('|')[1] || null;
     }
 
-    const urlToken = value.match(/[?&](?:code|reward|token)=([^&]+)/i);
-    if (urlToken) {
-      return decodeURIComponent(urlToken[1]);
-    }
-
+    // Return the raw value as-is (could be a plain token)
     return value;
   }
 
@@ -3075,9 +3099,13 @@
       return;
     }
 
+    // Store admin API key for backend calls (hardcoded for now; in production, this would be user-specific or environment-based)
+    adminApiKey.value = localStorage.getItem(ADMIN_API_KEY_STORAGE) || 'f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409';
+    localStorage.setItem(ADMIN_API_KEY_STORAGE, adminApiKey.value);
+
     adminLoginPanel.classList.add('reward-hidden');
     adminGeneratorPanel.classList.remove('reward-hidden');
-    qrGenerateMessage.textContent = 'Admin verified. Generate reward QR codes below.';
+    qrGenerateMessage.textContent = 'Admin verified. Connected to backend. Generate reward QR codes below.';
     updateRewardStats();
   });
 
@@ -3087,18 +3115,21 @@
     batch.forEach(reward => {
       const card = document.createElement('div');
       card.className = 'reward-qr-card';
-      card.setAttribute('data-reward-code', reward.code);
+      // Use token field from backend response
+      const rewardCode = reward.code || reward.token;
+      const rewardAmount = reward.amount || reward.cashbackAmount;
+      card.setAttribute('data-reward-code', rewardCode);
 
       const qrBox = document.createElement('div');
       qrBox.className = 'reward-qr-box';
       card.appendChild(qrBox);
 
       const amount = document.createElement('b');
-      amount.textContent = `Rs. ${Number(reward.amount).toLocaleString('en-IN')}`;
+      amount.textContent = `Rs. ${Number(rewardAmount).toLocaleString('en-IN')}`;
       card.appendChild(amount);
 
       const code = document.createElement('span');
-      code.textContent = reward.code;
+      code.textContent = rewardCode;
       card.appendChild(code);
 
       const expiry = document.createElement('span');
@@ -3115,12 +3146,12 @@
           correctLevel: QRCode.CorrectLevel.M
         });
       } else {
-        qrBox.textContent = reward.code;
+        qrBox.textContent = rewardCode;
       }
     });
   }
 
-  qrGeneratorForm.addEventListener('submit', event => {
+  qrGeneratorForm.addEventListener('submit', async event => {
     event.preventDefault();
     const amount = Number.parseInt(rewardAmount.value, 10);
     const count = Number.parseInt(rewardCount.value, 10);
@@ -3135,24 +3166,66 @@
       return;
     }
 
-    const createdAt = new Date();
-    const expiresAt = addMonths(createdAt, 3).toISOString();
-    latestRewardBatch = Array.from({ length: count }, () => ({
-      code: createRewardCode(),
-      amount,
-      createdAt: createdAt.toISOString(),
-      expiresAt,
-      claimedAt: null,
-      upiId: null,
-      payoutStatus: 'unclaimed'
-    }));
+    // Show loading state
+    const submitBtn = qrGeneratorForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<svg style="animation: spin 1s linear infinite;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="15.7 47.1"/></svg> Generating...';
+    qrGenerateMessage.textContent = `Generating ${count} QR codes...`;
 
-    rewardLedger = rewardLedger.concat(latestRewardBatch);
-    saveRewardLedger();
-    renderRewardBatch(latestRewardBatch);
-    updateRewardStats();
-    downloadRewardPdf.disabled = false;
-    qrGenerateMessage.textContent = `${count} QR codes generated for Rs. ${amount}. Expiry: ${formatRewardDate(expiresAt)}.`;
+    try {
+      // Call backend API to generate rewards
+      const response = await fetch(`${API_BASE_URL}/api/admin/rewards/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': adminApiKey.value
+        },
+        body: JSON.stringify({
+          count: count,
+          rewards: [amount],  // Single amount wrapped in array
+          campaign: 'Sri Sai Launch'
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || `Backend error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      if (!result.success || !result.generated) {
+        throw new Error('Invalid response from backend');
+      }
+
+      // Transform backend response to frontend format
+      latestRewardBatch = result.generated.map(reward => ({
+        code: reward.token,  // Use token from backend as code
+        amount: reward.cashbackAmount,
+        createdAt: reward.createdAt,
+        expiresAt: reward.expiresAt,
+        claimedAt: reward.redeemedAt,
+        upiId: reward.redeemedUpiId,
+        payoutStatus: reward.status === 'REDEEMED' ? 'claimed' : 'unclaimed',
+        // Keep original backend fields for reference
+        token: reward.token,
+        status: reward.status
+      }));
+
+      rewardLedger = rewardLedger.concat(latestRewardBatch);
+      saveRewardLedger();
+      renderRewardBatch(latestRewardBatch);
+      updateRewardStats();
+      downloadRewardPdf.disabled = false;
+      qrGenerateMessage.textContent = `✓ ${count} QR codes generated from backend. Expiry: ${formatRewardDate(result.generated[0].expiresAt)}.`;
+    } catch (error) {
+      console.error('QR Generation error:', error);
+      qrGenerateMessage.textContent = `Error: ${error.message}. Make sure the backend is running at ${API_BASE_URL}.`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+    }
   });
 
   downloadRewardPdf.addEventListener('click', () => {
@@ -3215,37 +3288,85 @@
     claimState.innerHTML = message;
   }
 
-  function verifyReward(rawValue) {
-    const code = extractRewardCode(rawValue);
+  async function verifyReward(rawValue) {
+    const token = extractRewardCode(rawValue);
     claimMessage.textContent = '';
     activeRewardClaim = null;
     claimRewardForm.classList.add('reward-hidden');
 
-    if (!code) {
+    if (!token) {
       setClaimState('No reward code found.');
       return;
     }
 
-    const reward = rewardLedger.find(item => item.code === code);
-    if (!reward) {
-      setClaimState(`Reward code <b>${escapeHtml(code)}</b> was not found.`);
-      return;
-    }
+    try {
+      // First, try to look up in local ledger (for backward compatibility with old demo codes)
+      let reward = rewardLedger.find(item => item.code === token || item.token === token);
+      
+      if (reward) {
+        // Found in local ledger
+        if (reward.claimedAt) {
+          setClaimState(`This QR was already claimed on <b>${formatRewardDate(reward.claimedAt)}</b>.`);
+          return;
+        }
 
-    if (reward.claimedAt) {
-      setClaimState(`This QR was already claimed on <b>${formatRewardDate(reward.claimedAt)}</b>.`);
-      return;
-    }
+        if (new Date(reward.expiresAt).getTime() <= Date.now()) {
+          setClaimState(`This QR expired on <b>${formatRewardDate(reward.expiresAt)}</b>.`);
+          return;
+        }
 
-    if (new Date(reward.expiresAt).getTime() <= Date.now()) {
-      setClaimState(`This QR expired on <b>${formatRewardDate(reward.expiresAt)}</b>.`);
-      return;
-    }
+        activeRewardClaim = reward;
+        setClaimState(`Verified reward amount: <b>Rs. ${Number(reward.amount).toLocaleString('en-IN')}</b><br>Valid until ${formatRewardDate(reward.expiresAt)}.`);
+        claimRewardForm.classList.remove('reward-hidden');
+        userUpiId.focus();
+        return;
+      }
 
-    activeRewardClaim = reward;
-    setClaimState(`Verified reward amount: <b>Rs. ${Number(reward.amount).toLocaleString('en-IN')}</b><br>Valid until ${formatRewardDate(reward.expiresAt)}.`);
-    claimRewardForm.classList.remove('reward-hidden');
-    userUpiId.focus();
+      // Try to verify from backend
+      setClaimState('Verifying with backend...');
+      const response = await fetch(`${API_BASE_URL}/api/reward/${encodeURIComponent(token)}`);
+      
+      if (!response.ok) {
+        setClaimState(`Reward code <b>${escapeHtml(token)}</b> was not found on the backend.`);
+        return;
+      }
+
+      const result = await response.json();
+      
+      if (!result.valid) {
+        setClaimState(`Reward code <b>${escapeHtml(token)}</b> is invalid.`);
+        return;
+      }
+
+      if (result.redeemed) {
+        setClaimState(`This QR was already claimed.`);
+        return;
+      }
+
+      if (result.expired) {
+        setClaimState(`This QR has expired.`);
+        return;
+      }
+
+      // Reward is valid and claimable
+      activeRewardClaim = {
+        token: token,
+        code: token,
+        amount: result.cashbackAmount,
+        status: result.status,
+        campaign: result.campaign,
+        claimedAt: null,
+        upiId: null,
+        payoutStatus: 'unclaimed'
+      };
+
+      setClaimState(`Verified reward amount: <b>Rs. ${Number(result.cashbackAmount).toLocaleString('en-IN')}</b><br>Valid and ready to claim.`);
+      claimRewardForm.classList.remove('reward-hidden');
+      userUpiId.focus();
+    } catch (error) {
+      console.error('Verify reward error:', error);
+      setClaimState(`Error verifying reward: ${error.message}`);
+    }
   }
 
   async function stopRewardScanner() {
@@ -3301,7 +3422,7 @@
     verifyReward(manualRewardCode.value);
   });
 
-  claimRewardForm.addEventListener('submit', event => {
+  claimRewardForm.addEventListener('submit', async event => {
     event.preventDefault();
     const upi = userUpiId.value.trim();
     const upiPattern = /^[a-zA-Z0-9._-]{2,256}@[a-zA-Z0-9._-]{2,64}$/;
@@ -3316,25 +3437,65 @@
       return;
     }
 
-    const claimedAt = new Date().toISOString();
-    rewardLedger = rewardLedger.map(reward => {
-      if (reward.code !== activeRewardClaim.code) return reward;
-      return {
-        ...reward,
-        claimedAt,
-        upiId: upi,
-        payoutStatus: 'queued'
-      };
-    });
+    const submitBtn = claimRewardForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<svg style="animation: spin 1s linear infinite;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="15.7 47.1"/></svg> Claiming...';
+    claimMessage.textContent = '';
 
-    saveRewardLedger();
-    updateRewardStats();
-    claimRewardForm.classList.add('reward-hidden');
-    claimMessage.textContent = `Rs. ${activeRewardClaim.amount} reward request queued for ${upi}.`;
-    setClaimState('Reward claimed successfully. Server payout integration can release the UPI transfer.');
-    activeRewardClaim = null;
-    userUpiId.value = '';
-    manualRewardCode.value = '';
+    try {
+      // Call backend claim API
+      const token = activeRewardClaim.token || activeRewardClaim.code;
+      const response = await fetch(`${API_BASE_URL}/api/reward/claim`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token: token,
+          upiId: upi
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || `Claim failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || 'Claim failed');
+      }
+
+      // Update local ledger for consistency
+      const claimedAt = new Date().toISOString();
+      rewardLedger = rewardLedger.map(reward => {
+        if (reward.code !== activeRewardClaim.code && reward.token !== activeRewardClaim.token) {
+          return reward;
+        }
+        return {
+          ...reward,
+          claimedAt,
+          upiId: upi,
+          payoutStatus: 'queued'
+        };
+      });
+
+      saveRewardLedger();
+      updateRewardStats();
+      claimRewardForm.classList.add('reward-hidden');
+      claimMessage.textContent = `✓ Rs. ${activeRewardClaim.amount} reward request queued for ${upi}. Backend will process the payout.`;
+      setClaimState('Reward claimed successfully. Your payment will be processed shortly.');
+      activeRewardClaim = null;
+      userUpiId.value = '';
+      manualRewardCode.value = '';
+    } catch (error) {
+      console.error('Claim reward error:', error);
+      claimMessage.textContent = `Error: ${error.message}`;
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+    }
   });
 
   updateRewardStats();

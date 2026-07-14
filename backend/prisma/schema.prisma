@@ -1,0 +1,48 @@
+// Prisma schema for the Sri Sai's Fryums QR Rewards program.
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RewardStatus {
+  ACTIVE   // QR generated, not yet claimed, not expired
+  REDEEMED // QR successfully claimed by a customer
+  EXPIRED  // QR passed its expiry date without being claimed
+}
+
+// One row per physical QR code printed on a packet.
+model RewardQR {
+  id             Int          @id @default(autoincrement())
+
+  // Unique code embedded in the QR image / claim link.
+  token          String       @unique @db.VarChar(64)
+
+  // Cashback amount in whole rupees (matches the frontend's ₹5–₹100 cards).
+  cashbackAmount Int          @map("cashback_amount")
+
+  status         RewardStatus @default(ACTIVE)
+
+  // Optional batch/campaign label, e.g. "launch-2026" or "diwali-offer".
+  campaign       String?      @db.VarChar(120)
+
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  // Set only once the QR has been successfully claimed.
+  redeemedAt     DateTime?    @map("redeemed_at")
+
+  // Set only once the QR has been successfully claimed.
+  redeemedUpiId  String?      @map("redeemed_upi_id") @db.VarChar(120)
+
+  // When this QR stops being claimable. Computed at creation time as
+  // now() + REWARD_EXPIRY_DAYS (see src/config/env.js).
+  expiresAt      DateTime?    @map("expires_at")
+
+  @@index([status])
+  @@map("reward_qr")
+}
