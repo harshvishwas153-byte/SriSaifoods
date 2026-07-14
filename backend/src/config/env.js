@@ -13,6 +13,10 @@ function requireEnv(name) {
   return value;
 }
 
+function optionalEnv(name, defaultValue) {
+  return process.env[name] || defaultValue;
+}
+
 module.exports = {
   PORT: Number(process.env.PORT || 4000),
   NODE_ENV: process.env.NODE_ENV || "development",
@@ -26,4 +30,22 @@ module.exports = {
   ADMIN_API_KEY: process.env.ADMIN_API_KEY || null,
 
   CORS_ORIGIN: process.env.CORS_ORIGIN || "*",
+
+  // ===== CASHFREE PAYOUT CONFIGURATION =====
+  // These enable automatic payouts when customers claim rewards.
+  // Get credentials from: https://merchant.cashfree.com/settings/payout
+  CASHFREE_APP_ID: optionalEnv("CASHFREE_APP_ID", null),
+  CASHFREE_CLIENT_SECRET: optionalEnv("CASHFREE_CLIENT_SECRET", null),
+  CASHFREE_PAYOUT_CLIENT_ID: optionalEnv("CASHFREE_PAYOUT_CLIENT_ID", null),
+  CASHFREE_PAYOUT_CLIENT_SECRET: optionalEnv(
+    "CASHFREE_PAYOUT_CLIENT_SECRET",
+    null
+  ),
+
+  // Environment: TEST or PROD
+  // TEST uses sandbox.cashfree.com, PROD uses api.cashfree.com
+  CASHFREE_ENV: optionalEnv("CASHFREE_ENV", "TEST"),
+
+  // Optional webhook URL for Cashfree to notify about payout status changes
+  CASHFREE_NOTIFY_URL: optionalEnv("CASHFREE_NOTIFY_URL", null),
 };

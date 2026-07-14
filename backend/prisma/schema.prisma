@@ -43,6 +43,19 @@ model RewardQR {
   // now() + REWARD_EXPIRY_DAYS (see src/config/env.js).
   expiresAt      DateTime?    @map("expires_at")
 
+  // ===== CASHFREE PAYOUT FIELDS =====
+  // These are populated when the reward is claimed and a payout is initiated.
+
+  // Unique transfer ID generated for this payout (e.g., cf_reward_1234567890_abc123)
+  cashfreeTransferId String?   @map("cashfree_transfer_id") @db.VarChar(100)
+
+  // Reference ID returned by Cashfree API (used to track payout status)
+  cashfreeReferenceId String?  @map("cashfree_reference_id") @db.VarChar(100)
+
+  // Payout status: PENDING, INITIATED, PROCESSING, SUCCESS, FAILED, REVERSAL
+  payoutStatus   String?      @default("PENDING") @map("payout_status") @db.VarChar(50)
+
   @@index([status])
+  @@index([payoutStatus])
   @@map("reward_qr")
 }
