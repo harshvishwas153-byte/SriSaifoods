@@ -51,6 +51,15 @@ function validateCredentials() {
   }
 }
 
+function isConfigured() {
+  return Boolean(
+    CASHFREE_APP_ID &&
+      CASHFREE_CLIENT_SECRET &&
+      CASHFREE_PAYOUT_CLIENT_ID &&
+      CASHFREE_PAYOUT_CLIENT_SECRET
+  );
+}
+
 /**
  * Authenticate with Cashfree Payout API
  * Returns access token valid for 1 hour
@@ -340,5 +349,6 @@ module.exports = {
   verifyPayout,
   getAccessToken,
   generateTransferId,
+  isConfigured,
   CASHFREE_ENV,
 };

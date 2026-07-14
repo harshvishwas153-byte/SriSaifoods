@@ -3686,7 +3686,7 @@
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || `Claim failed: ${response.status}`);
+        throw new Error(error.message || error.error || `Claim failed: ${response.status}`);
       }
 
       const result = await response.json();

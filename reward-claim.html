@@ -628,7 +628,7 @@ function formatDate(dateString) {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || result.error || 'Claim failed');
+        throw new Error(result.message || result.error || `Claim failed: ${response.status}`);
       }
 
       if (!result.success) {
