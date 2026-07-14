@@ -376,7 +376,7 @@ npm start
 ### Verification
 ```bash
 # Health check
-curl http://localhost:4000/health
+curl https://srisaifoods.onrender.com/health
 
 # Prisma Studio (view database)
 npx prisma studio

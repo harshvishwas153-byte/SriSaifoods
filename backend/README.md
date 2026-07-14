@@ -88,7 +88,7 @@ Create the database and table (Prisma migration):
 ```bash
 npm run prisma:migrate     # creates the reward_qr table from schema.prisma
 npm run seed                # optional: inserts sample tokens for testing
-npm run dev                  # starts the API on http://localhost:4000
+npm run dev                  # starts the API on https://srisaifoods.onrender.com
 ```
 
 > **Note on this sandbox:** I built, syntax-checked, and ran this backend

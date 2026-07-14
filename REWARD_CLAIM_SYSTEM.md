@@ -379,7 +379,7 @@ Complete reward claim page with backend integration.
 ### Setup
 
 1. Import the endpoints below into Postman
-2. Set variable: `base_url` = `http://localhost:4000`
+2. Set variable: `base_url` = `https://srisaifoods.onrender.com`
 3. Set variable: `admin_key` = `f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409`
 
 ### Test Sequence
@@ -659,12 +659,8 @@ CORS_ORIGIN=*
 
 In `index.html` and `reward-claim.html`:
 ```javascript
-const API_BASE_URL = 'http://localhost:4000';
+const API_BASE_URL = 'https://srisaifoods.onrender.com';
 ```
-
-Update for production:
-```javascript
-const API_BASE_URL = 'https://api.srisaifoods.com';
 ```
 
 ---
@@ -686,7 +682,7 @@ const API_BASE_URL = 'https://api.srisaifoods.com';
 
 ### Check Backend Status
 ```bash
-curl http://localhost:4000/health
+curl https://srisaifoods.onrender.com/health
 ```
 
 ### View Prisma Admin UI
