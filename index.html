@@ -2196,8 +2196,9 @@
             </div>
           </form>
           <p class="reward-message" id="adminLoginMessage"></p>
-          <p class="provider-note">Live Gmail OTP sending needs a backend email service. This page keeps a demo OTP in the browser so the dashboard can be tested now.</p>
-        </div>
+<p class="provider-note">
+  Enter your Gmail ID and click <strong>Send OTP</strong>. A verification code will be sent to your registered email address.
+</p>        </div>
 
         <div class="reward-tool-panel reward-hidden" id="adminGeneratorPanel">
           <h4>Generate Reward QR</h4>
@@ -2923,8 +2924,6 @@
   let rewardLedger = loadRewardLedger();
   let latestRewardBatch = [];
   let activeRewardClaim = null;
-  let demoOtpCode = null;
-  let demoOtpExpiresAt = 0;
   let html5QrScanner = null;
 
   function loadRewardLedger() {
@@ -3063,51 +3062,94 @@
     btn.addEventListener('click', () => switchRewardPanel(btn.getAttribute('data-reward-view')));
   });
 
-  adminEmailForm.addEventListener('submit', event => {
+  adminEmailForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+
     const email = adminEmail.value.trim().toLowerCase();
-    const isGmail = /^[a-z0-9._%+-]+@gmail\.com$/i.test(email);
 
-    if (!isGmail) {
-      adminLoginMessage.textContent = 'Please enter a valid Gmail ID for admin login.';
-      adminLoginMessage.classList.add('strong');
-      return;
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            adminLoginMessage.textContent = data.message || "Failed to send OTP";
+            adminLoginMessage.classList.add("strong");
+            return;
+        }
+
+        adminOtp.value = "";
+        adminOtpForm.classList.remove("reward-hidden");
+        adminLoginMessage.classList.remove("strong");
+        adminLoginMessage.textContent =
+            "OTP sent successfully. Please check your email.";
+
+        adminOtp.focus();
+
+    } catch (err) {
+        console.error(err);
+        adminLoginMessage.textContent =
+            "Unable to connect to server.";
+        adminLoginMessage.classList.add("strong");
     }
+});
 
-    demoOtpCode = String(Math.floor(100000 + Math.random() * 900000));
-    demoOtpExpiresAt = Date.now() + 5 * 60 * 1000;
-    adminOtp.value = '';
-    adminOtpForm.classList.remove('reward-hidden');
-    adminLoginMessage.classList.remove('strong');
-    adminLoginMessage.textContent = `OTP sent to ${email}. Demo OTP: ${demoOtpCode}`;
-    adminOtp.focus();
-  });
-
-  adminOtpForm.addEventListener('submit', event => {
+  adminOtpForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const enteredOtp = adminOtp.value.trim();
 
-    if (!demoOtpCode || Date.now() > demoOtpExpiresAt) {
-      adminLoginMessage.textContent = 'OTP expired. Send a new OTP to continue.';
-      adminLoginMessage.classList.add('strong');
-      return;
+    const email = adminEmail.value.trim().toLowerCase();
+    const otp = adminOtp.value.trim();
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email,
+                otp,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            adminLoginMessage.textContent =
+                data.message || "Invalid OTP";
+            adminLoginMessage.classList.add("strong");
+            return;
+        }
+
+        adminLoginMessage.textContent = "Login successful.";
+        adminLoginMessage.classList.remove("strong");
+
+        adminOtpForm.classList.add("reward-hidden");
+
+        // Save login session
+        localStorage.setItem("rewardAdminAuthenticated", "true");
+
+        // Show admin dashboard
+        switchRewardPanel("admin");
+
+        renderRewardGrid();
+        updateRewardStats();
+
+    } catch (err) {
+        console.error(err);
+
+        adminLoginMessage.textContent =
+            "Unable to verify OTP.";
+
+        adminLoginMessage.classList.add("strong");
     }
-
-    if (enteredOtp !== demoOtpCode) {
-      adminLoginMessage.textContent = 'Incorrect OTP. Please try again.';
-      adminLoginMessage.classList.add('strong');
-      return;
-    }
-
-    // Store admin API key for backend calls (hardcoded for now; in production, this would be user-specific or environment-based)
-    adminApiKey.value = localStorage.getItem(ADMIN_API_KEY_STORAGE) || 'f8171c016dea72712d4f704a07d2aabb780bfa32e0c28409';
-    localStorage.setItem(ADMIN_API_KEY_STORAGE, adminApiKey.value);
-
-    adminLoginPanel.classList.add('reward-hidden');
-    adminGeneratorPanel.classList.remove('reward-hidden');
-    qrGenerateMessage.textContent = 'Admin verified. Connected to backend. Generate reward QR codes below.';
-    updateRewardStats();
-  });
+});
 
   function renderRewardBatch(batch) {
     generatedQrGrid.innerHTML = '';
