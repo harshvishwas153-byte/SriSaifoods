@@ -2926,6 +2926,34 @@
   let activeRewardClaim = null;
   let html5QrScanner = null;
 
+  function requireRewardElement(element, selector) {
+    if (!element) {
+      throw new Error(`Missing required rewards dashboard element: ${selector}`);
+    }
+    return element;
+  }
+
+  function setAdminLoginMessage(message, isError = false) {
+    requireRewardElement(adminLoginMessage, '#adminLoginMessage');
+    adminLoginMessage.textContent = message;
+    adminLoginMessage.classList.toggle('strong', isError);
+  }
+
+  async function parseJsonResponse(response, context) {
+    const text = await response.text();
+    if (!text) {
+      return {};
+    }
+
+    try {
+      return JSON.parse(text);
+    } catch (error) {
+      console.error(`${context} JSON Parse Error:`, error);
+      console.error(error.stack);
+      throw new Error(`${context} returned invalid JSON`);
+    }
+  }
+
   function loadRewardLedger() {
     try {
       const saved = JSON.parse(localStorage.getItem(REWARD_STORAGE_KEY) || '[]');
@@ -3035,6 +3063,7 @@
   }
 
   function updateRewardStats() {
+    console.log("Updating reward stats...");
     const stats = getRewardStats();
     if (rewardTotalPill) {
       rewardTotalPill.textContent = `${stats.activeCount} active QR`;
@@ -3048,6 +3077,11 @@
   }
 
   function switchRewardPanel(view) {
+    console.log(`Switching rewards panel to ${view}...`);
+    if (!Array.from(rewardPanels).some(panel => panel.getAttribute('data-reward-panel') === view)) {
+      throw new Error(`Reward panel not found: ${view}`);
+    }
+
     rewardMenuBtns.forEach(btn => {
       const isActive = btn.getAttribute('data-reward-view') === view;
       btn.classList.toggle('active', isActive);
@@ -3056,6 +3090,47 @@
     rewardPanels.forEach(panel => {
       panel.classList.toggle('active', panel.getAttribute('data-reward-panel') === view);
     });
+  }
+
+  function renderRewardGrid() {
+    console.log("Rendering rewards...");
+    requireRewardElement(adminLoginPanel, '#adminLoginPanel');
+    requireRewardElement(adminGeneratorPanel, '#adminGeneratorPanel');
+    requireRewardElement(generatedQrGrid, '#generatedQrGrid');
+
+    adminLoginPanel.classList.add('reward-hidden');
+    adminGeneratorPanel.classList.remove('reward-hidden');
+
+    if (latestRewardBatch.length) {
+      renderRewardBatch(latestRewardBatch);
+      return;
+    }
+
+    generatedQrGrid.innerHTML = '';
+    qrGenerateMessage.textContent = rewardLedger.length
+      ? 'Admin dashboard ready. Generate a new batch to preview QR codes here.'
+      : 'Admin dashboard ready. No reward QR codes generated yet.';
+  }
+
+  function saveAdminAuthentication() {
+    try {
+      localStorage.setItem("rewardAdminAuthenticated", "true");
+    } catch (error) {
+      console.error("Admin Auth Storage Error:", error);
+      console.error(error.stack);
+      throw new Error("Login verified, but this browser could not save the admin session.");
+    }
+  }
+
+  function openAdminDashboard() {
+    console.log("Opening admin dashboard...");
+    requireRewardElement(adminOtpForm, '#adminOtpForm');
+    adminOtpForm.classList.add("reward-hidden");
+    saveAdminAuthentication();
+    switchRewardPanel("admin");
+    renderRewardGrid();
+    updateRewardStats();
+    console.log("Dashboard loaded.");
   }
 
   rewardMenuBtns.forEach(btn => {
@@ -3068,6 +3143,7 @@
     const email = adminEmail.value.trim().toLowerCase();
 
     try {
+        console.log("Sending OTP...");
         const response = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
             method: "POST",
             headers: {
@@ -3076,27 +3152,24 @@
             body: JSON.stringify({ email }),
         });
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response, "Send OTP");
 
         if (!response.ok) {
-            adminLoginMessage.textContent = data.message || "Failed to send OTP";
-            adminLoginMessage.classList.add("strong");
+            setAdminLoginMessage(data.message || "Failed to send OTP", true);
             return;
         }
 
         adminOtp.value = "";
         adminOtpForm.classList.remove("reward-hidden");
-        adminLoginMessage.classList.remove("strong");
-        adminLoginMessage.textContent =
-            "OTP sent successfully. Please check your email.";
+        setAdminLoginMessage("OTP sent successfully. Please check your email.");
+        console.log("OTP sent");
 
         adminOtp.focus();
 
     } catch (err) {
-        console.error(err);
-        adminLoginMessage.textContent =
-            "Unable to connect to server.";
-        adminLoginMessage.classList.add("strong");
+        console.error("OTP Send Error:", err);
+        console.error(err.stack);
+        setAdminLoginMessage(err.message || "Unable to connect to server.", true);
     }
 });
 
@@ -3107,6 +3180,7 @@
     const otp = adminOtp.value.trim();
 
     try {
+        console.log("Verifying OTP...");
         const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
             method: "POST",
             headers: {
@@ -3118,40 +3192,26 @@
             }),
         });
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response, "Verify OTP");
+        console.log("Backend response:", data);
 
         if (!response.ok) {
-            adminLoginMessage.textContent =
-                data.message || "Invalid OTP";
-            adminLoginMessage.classList.add("strong");
+            setAdminLoginMessage(data.message || "Invalid OTP", true);
             return;
         }
 
-        adminLoginMessage.textContent = "Login successful.";
-        adminLoginMessage.classList.remove("strong");
-
-        adminOtpForm.classList.add("reward-hidden");
-
-        // Save login session
-        localStorage.setItem("rewardAdminAuthenticated", "true");
-
-        // Show admin dashboard
-        switchRewardPanel("admin");
-
-        renderRewardGrid();
-        updateRewardStats();
+        setAdminLoginMessage("Login successful.");
+        openAdminDashboard();
 
     } catch (err) {
-        console.error(err);
-
-        adminLoginMessage.textContent =
-            "Unable to verify OTP.";
-
-        adminLoginMessage.classList.add("strong");
+        console.error("OTP Verify Error:", err);
+        console.error(err.stack);
+        setAdminLoginMessage(err.message || "Unable to verify OTP.", true);
     }
 });
 
   function renderRewardBatch(batch) {
+    requireRewardElement(generatedQrGrid, '#generatedQrGrid');
     generatedQrGrid.innerHTML = '';
 
     batch.forEach(reward => {
